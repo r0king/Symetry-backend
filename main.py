@@ -1,11 +1,11 @@
 """
     GET / for root information on API. Return value.
 
-    POST /user - registration . Return confirmation.
+    POST /user - registration . Return user details.
 
     GET /user - authentication. Return details of current user.
 
-    POST /auth/login - create a new session. Return a token.
+    POST /auth/login - create a new session. Return a token ID.
 
     POST /auth/logout - terminate a new session. 
 
