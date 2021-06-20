@@ -24,3 +24,15 @@ class User(Base):
     app_id = Column(Integer, ForeignKey("app.id"))
 
     app = relationship("User", back_populates="user")
+
+
+class Session(Base):
+    """
+    SESSIONS TABLE
+    sessionID, tokenID and a one to one relation with the user
+    """
+    __tablename__ = 'sessions'
+
+    id = Column(Integer, primary_key=True)
+    token_id = Column(String, unique=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"))    
