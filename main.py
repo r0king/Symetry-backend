@@ -15,11 +15,9 @@
 
     POST /access/token - accept token Id from user. Return Token.
 
-    GET /acess/token - for verification of token by 3rd party server. Returns True or False.
+    GET /access/token - for verification of token by 3rd party server. Returns True or False.
 
     GET /access/profile - verifies token. Return user details.
 
-    GET /logging - keeps track of logging . Return logs. 
-
-
+    GET /logging - keeps track of logging . Return logs.
  """

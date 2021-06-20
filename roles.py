@@ -6,12 +6,12 @@ class Roles(Enum):
     The role enum
     """
     ADMIN = "ADMIN"
-    MODERATOR = "MODERATOR"
+    APP = "APP"
     USER = "USER"
 
 
 hierarchy = {
     Roles.ADMIN: 2,
-    Roles.MODERATOR: 1,
+    Roles.APP: 1,
     Roles.USER: 0
 }

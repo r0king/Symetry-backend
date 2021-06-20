@@ -7,15 +7,14 @@ from roles import Roles
 class User(Base):
     """
     USER MODEL
-    userID, username, first name, last name, email, password(Hashed), is_active, contact, roles,
+    userID, username, name, email, password(Hashed), is_active, contact, roles,
     related to app
     """
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
+    name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     contact = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
@@ -23,7 +22,7 @@ class User(Base):
     is_active = Column(Boolean, default=True, nullable=False)
     app_id = Column(Integer, ForeignKey("app.id"))
 
-    app = relationship("User", back_populates="user")
+    app = relationship("App", back_populates="app")
 
 
 class Session(Base):
@@ -31,8 +30,7 @@ class Session(Base):
     SESSIONS TABLE
     sessionID, tokenID and a one to one relation with the user
     """
-    __tablename__ = 'sessions'
-
+    __tablename__ = "sessions"
     id = Column(Integer, primary_key=True)
     token_id = Column(String, unique=True, nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"))
