@@ -51,5 +51,22 @@ class Logging(Base):
     user_id = Column(Integer, ForeignKey("user.id"))
     app_id = Column(String, ForeignKey("app.id"))
     time = Column(DateTime, default=datetime.datetime.utcnow)
-    message = Column(String)   
+    message = Column(String)  
+
+
+class Token(Base): 
+
+    """  
+
+     Token Table : User ID, App ID, Token ID
+    
+    """ 
+
+    __tablename__ = 'tokens'
+
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    app_id = Column(String, ForeignKey("app.id"))
+    token_id = Column(String, unique=True, nullable=False) 
 
