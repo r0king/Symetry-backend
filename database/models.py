@@ -34,3 +34,22 @@ class Session(Base):
     id = Column(Integer, primary_key=True)
     token_id = Column(String, unique=True, nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"))
+
+
+class Logging(Base):
+    
+    """ 
+
+    Logging : User ID, App ID, Time, Message
+    
+    """
+
+    __tablename__ = 'logs'
+
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    app_id = Column(String, ForeignKey("app.id"))
+    time = Column(DateTime, default=datetime.datetime.utcnow)
+    message = Column(String)   
+
