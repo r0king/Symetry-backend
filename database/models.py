@@ -35,4 +35,4 @@ class Session(Base):
 
     id = Column(Integer, primary_key=True)
     token_id = Column(String, unique=True, nullable=False)
-    user_id = Column(Integer, ForeignKey("user.id"))    
+    user_id = Column(Integer, ForeignKey("user.id"))
