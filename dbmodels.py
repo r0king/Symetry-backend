@@ -3,7 +3,7 @@
 
     Session Table : Session ID, User ID, Token ID etc
 
-    Logging : User ID, App ID, Entry time, Exit Time
+    Logging : User ID, App ID, Time, Message
 
     App Table : App ID, App Secret(Hashed), App Name, Email, User ID (many to many)
 
