@@ -1,13 +1,27 @@
-"""
-    User Table : User ID, Username, First Name, Last Name, Email, Password(Hashed), is_active, Contact, Roles etc. 
 
-    Session Table : Session ID, User ID, Token ID etc
+from sqlalchemy import Column, String, Boolean, Integer, Enum, ForeignKey
+from sqlalchemy.orm import relationship
+from database.config_db import Base
+from roles import Roles
 
-    Logging : User ID, App ID, Time, Message
 
-    App Table : App ID, App Secret(Hashed), App Name, Email, User ID (many to many)
+class User(Base):
+    """
+    USER MODEL
+    userID, username, first name, last name, email, password(Hashed), is_active, contact, roles,
+    related to app
+    """
+    __tablename__ = "users"
 
-    Token Table : User ID, App ID, Token ID
-    
-     
-"""
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True, nullable=False)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    contact = Column(String, unique=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    role = Column(Enum(Roles), default=Roles.USER, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    app_id = Column(Integer, ForeignKey("app.id"))
+
+    app = relationship("User", back_populates="user")
