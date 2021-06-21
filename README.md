@@ -32,7 +32,7 @@ source env/bin/activate
   "name": STRING,
   "email": STRING,
   "password": STRING,
-  "contact": STRING,
+  "contact": STRING,[OPTIONAL]
 }
 ```
 #### Receive User
