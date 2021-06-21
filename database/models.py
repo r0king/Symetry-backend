@@ -47,7 +47,7 @@ class Logging(Base):
     LOGGING MODEL
     User ID, App ID, Time, Message
     """
-    __tablename__ = 'logs'
+    __tablename__ = "logs"
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
@@ -61,7 +61,7 @@ class Token(Base):
      TOKEN MODEL
      User ID, App ID, Token ID
     """
-    __tablename__ = 'tokens'
+    __tablename__ = "tokens"
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
@@ -77,10 +77,10 @@ class App(Base):
     __tablename__ = "apps"
 
     id = Column(String, primary_key=True)
-    app_sec = Column(String,unique=True,nullable=False)
+    app_sec = Column(String, unique=True, nullable=False)
     app_name = Column(String, nullable=False)
     password = Column(String, nullable=False)
-    email = Column(String, nullable=False,unique=True)
+    email = Column(String, nullable=False, unique=True)
     user_id = Column(Integer, ForeignKey("user.id"))
 
     user = relationship("User", back_populates="app")
