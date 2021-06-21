@@ -1,3 +1,6 @@
+"""
+Configure Database
+"""
 from os import environ
 from sqlalchemy import create_engine
 

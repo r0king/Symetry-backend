@@ -1,3 +1,6 @@
+"""
+Roles Enum
+"""
 from enum import Enum
 
 

@@ -1,8 +1,11 @@
+"""
+Database Models
+"""
+import datetime
 from sqlalchemy import Column, String, Boolean, Integer, Enum, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from database.config_db import Base
-from roles import Roles
-import datetime
+from database.roles import Roles
 
 
 class User(Base):
@@ -39,8 +42,8 @@ class Session(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
 
 
-class Logging(Base): 
-    """ 
+class Logging(Base):
+    """
     Logging : User ID, App ID, Time, Message
     """
     __tablename__ = 'logs'
@@ -49,19 +52,19 @@ class Logging(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     app_id = Column(String, ForeignKey("apps.id"))
     time = Column(DateTime, default=datetime.datetime.utcnow)
-    message = Column(String)  
+    message = Column(String)
 
 
-class Token(Base): 
-    """  
+class Token(Base):
+    """
      Token Table : User ID, App ID, Token ID
-    """ 
+    """
     __tablename__ = 'tokens'
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     app_id = Column(String, ForeignKey("apps.id"))
-    token_id = Column(String, unique=True, nullable=False) 
+    token_id = Column(String, unique=True, nullable=False)
 
 
 class App(Base):
@@ -74,7 +77,7 @@ class App(Base):
     id = Column(String, primary_key=True)
     app_sec = Column(String,unique=True,nullable=False)
     app_name = Column(String, nullable=False)
-    password = Column(String, nullable=False) 
+    password = Column(String, nullable=False)
     email = Column(String, nullable=False,unique=True)
     user_id = Column(Integer, ForeignKey("user.id"))
 
