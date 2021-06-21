@@ -31,7 +31,7 @@ class User(Base):
 
 class Session(Base):
     """
-    SESSIONS TABLE
+    SESSIONS MODEL
     sessionID, tokenID and a one to one relation with the user
     """
     __tablename__ = "sessions"
@@ -44,7 +44,8 @@ class Session(Base):
 
 class Logging(Base):
     """
-    Logging : User ID, App ID, Time, Message
+    LOGGING MODEL
+    User ID, App ID, Time, Message
     """
     __tablename__ = 'logs'
 
@@ -57,7 +58,8 @@ class Logging(Base):
 
 class Token(Base):
     """
-     Token Table : User ID, App ID, Token ID
+     TOKEN MODEL
+     User ID, App ID, Token ID
     """
     __tablename__ = 'tokens'
 
@@ -68,9 +70,9 @@ class Token(Base):
 
 
 class App(Base):
-    """App Table
-    App ID, App Secret(Hashed), App Name, Email, User ID (many to many)
-    Password will be hashed
+    """
+    APP MODEL
+    App ID, App Secret(Hashed), App Name, Email, Password(Hashed), User ID (many to many)
     """
     __tablename__ = "apps"
 
