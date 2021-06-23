@@ -31,7 +31,6 @@ class SessionSchema(BaseModel):
         # Enable ORM mode
         orm_mode = True
 
-
 class SessionCreate(SessionSchema):
     #  session create schema
     token_id: str
