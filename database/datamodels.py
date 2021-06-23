@@ -20,3 +20,18 @@ class Log(CreateLog):
     class Config:
         """Enable ORM mode"""
         orm_mode = True
+
+
+class SessionSchema(BaseModel):
+    #  session schema
+    app_id: int
+    user_id: int
+    token_id: str
+
+    class Config:
+        # Enable ORM mode
+        orm_mode = True
+
+class SessionCreate(SessionSchema):
+    #  session create schema
+    pass
