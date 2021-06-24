@@ -16,10 +16,15 @@ class App(CreateApp):
     """Read App Schema"""
     app_id: str
     app_secret: str
+    
+    class Config:
+        """Enable ORM mode"""
+        orm_mode = True
+
 
 class HTTPError(BaseModel):
     detail: str
-    
+
 class Config:
         """Enable ORM mode"""
         orm_mode = True
