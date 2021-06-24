@@ -35,7 +35,7 @@ def get_all_apps(db: Session, limit = None, identify_by: dict = dict,offset: int
 
 def get_user(db: Session, user_id: int):
     """Search by user id"""
-    return db.query(App).filter_by(App.user_id= user_id).all()
+    return db.query(App).filter(App.user_id == user_id).all()
 
 def get_user_by_name(db: Session, name: str):
     """Search by username"""
