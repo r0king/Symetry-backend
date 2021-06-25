@@ -26,6 +26,11 @@ class HTTPError(BaseModel):
     detail: str
 
 
-
-
+class updateUser(BaseModel):
+    user_id: Optional[str]
+    password:Optional[str]
+    name: Optional[str]
+    email: Optional[str]
+    contact: Optional[str]
+    
 
