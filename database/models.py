@@ -24,9 +24,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(Enum(Roles), default=Roles.USER, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
-    app_id = Column(Integer, ForeignKey("apps.id"))
-
-    app = relationship("App", back_populates="user")
+ 
 
 
 class Session(Base):
@@ -38,7 +36,6 @@ class Session(Base):
 
     id = Column(Integer, primary_key=True)
     token_id = Column(String, unique=True, nullable=False)
-    app_id = Column(Integer, ForeignKey("apps.id"))
     user_id = Column(Integer, ForeignKey("users.id"))
 
 
@@ -49,7 +46,7 @@ class Logging(Base):
     """
     __tablename__ = "logs"
 
-    id = Column(Integer, primary_key=True)
+
     user_id = Column(Integer, ForeignKey("users.id"))
     app_id = Column(String, ForeignKey("apps.id"))
     time = Column(DateTime, default=datetime.datetime.utcnow)
@@ -66,21 +63,19 @@ class Token(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     app_id = Column(String, ForeignKey("apps.id"))
-    token_id = Column(String, unique=True, nullable=False)
+
 
 
 class App(Base):
     """
     APP MODEL
-    App ID, App Secret(Hashed), App Name, Email, Password(Hashed), User ID (many to many)
+    App ID, App Secret(Hashed), App Name, Password(Hashed), User ID (many to many)
     """
     __tablename__ = "apps"
 
     id = Column(String, primary_key=True)
     app_sec = Column(String, unique=True, nullable=False)
     app_name = Column(String, nullable=False)
-    password = Column(String, nullable=False)
-    email = Column(String, nullable=False, unique=True)
     user_id = Column(Integer, ForeignKey("user.id"))
 
     user = relationship("User", back_populates="app")
