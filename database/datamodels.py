@@ -24,13 +24,9 @@ class Log(CreateLog):
 
 class SessionSchema(BaseModel):
     #  session schema
-    app_id: int
+    session_id: int
     user_id: int
 
     class Config:
         # Enable ORM mode
         orm_mode = True
-
-class SessionCreate(SessionSchema):
-    #  session create schema
-    token_id: str
