@@ -6,10 +6,7 @@ from pydantic import BaseModel
 class CreateApp(BaseModel):
     """Create App Schema"""
     user_id: str
-    password:str
     name: str
-    email: str
-    contact: str
     app_name:str
 
 class App(CreateApp):
@@ -26,11 +23,13 @@ class HTTPError(BaseModel):
     detail: str
 
 
-class updateUser(BaseModel):
+class updateApp(BaseModel):
     user_id: Optional[str]
     password:Optional[str]
     name: Optional[str]
     email: Optional[str]
     contact: Optional[str]
+    app_name: Optional[str]
+    
     
 

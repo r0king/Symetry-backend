@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, applications
 from sqlalchemy.orm import Session, update
 from dbops.common import commit_changes_to_object
 from database.models import App
-from database.datamodels import CreateApp,updateUser
+from database.datamodels import CreateApp,updateApp
 
 def create_app(db:Session, app:CreateApp):
     """To create a new entry"""
@@ -21,13 +21,13 @@ def delete_app(db:Session, app:App, user_id:int):
     db.delete(query)
     db.commit()
 
-def update_app(db:Session, app:App, update_user:updateUser, user_id:int):
+def update_app(db:Session, app:App, update_app:updateApp, user_id:int):
     """To update the app profile"""
     query=db.query(app).filter(app.user_id== user_id)
     if query:
    	    raise HTTPException(status_code=409, detail="App not found.")
     for name,entry in vars(app.dict()):
-        db.execute(update(query.entry).values(updateUser.entry))
+        db.execute(update(query.entry).values(updateApp.entry))
     db.add(query)
     db.commit()
     return query
