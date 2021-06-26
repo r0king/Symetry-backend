@@ -1,9 +1,10 @@
 """
 Database Models
 """
-import datetime
+import uuid
 from sqlalchemy import Column, String, Boolean, Integer, Enum, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.functions import func
 from database.config_db import Base
 from database.roles import Roles
 
@@ -42,8 +43,8 @@ class Session(Base):
     id = Column(Integer, primary_key=True)
     token = Column(String, unique=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
-    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
-
+    timestamp = Column(DateTime, server_default=func.now())
+    save_session = Column(Boolean, default=False)
 
 
 class Logging(Base):
@@ -56,7 +57,7 @@ class Logging(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     app_id = Column(String, ForeignKey("apps.id"))
-    time = Column(DateTime, default=datetime.datetime.utcnow)
+    timestamp = Column(DateTime, server_default=func.now())
     message = Column(String)
 
 
@@ -68,8 +69,8 @@ class Token(Base):
     __tablename__ = "tokens"
     user_id = Column(Integer, ForeignKey("users.id"))
     app_id = Column(String, ForeignKey("apps.id"))
-    token_id = Column(String, primary_key=True) # Generate UUID
-
+    token_id = Column(String, primary_key=True, default=uuid.uuid4) # Generate UUID
+    timestamp = Column(DateTime, server_default=func.now())
 
 class App(Base):
     """
