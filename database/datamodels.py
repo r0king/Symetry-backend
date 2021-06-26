@@ -3,7 +3,7 @@ All the schemas for Symmetry
 """
 from datetime import datetime
 from pydantic import BaseModel
-
+from typing import Optional
 
 class CreateLog(BaseModel):
     """Create Log Schema"""
@@ -24,7 +24,7 @@ class Log(CreateLog):
 
 class SessionSchema(BaseModel):
     #  session schema
-    session_id: int
+    session_id: Optional[int] = None
     user_id: int
 
     class Config:

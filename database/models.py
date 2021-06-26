@@ -42,6 +42,8 @@ class Session(Base):
     id = Column(Integer, primary_key=True)
     token = Column(String, unique=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+
 
 
 class Logging(Base):
