@@ -24,18 +24,23 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(Enum(Roles), default=Roles.USER, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
- 
 
 
 class Session(Base):
     """
     SESSIONS MODEL
     sessionID, tokenID and a one to one relation with the user
+    this is for the user to log into our program only.
+    no session data of the 3rd party apps are stored here.
+
+    A= Sha(username+TOKEN-ID+hashedpassword+SECRET)
+    ->store into Sha(A) Sessions table.
+
     """
     __tablename__ = "sessions"
 
     id = Column(Integer, primary_key=True)
-    token_id = Column(String, unique=True, nullable=False)
+    token = Column(String, unique=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
 
 
@@ -59,11 +64,9 @@ class Token(Base):
      User ID, App ID, Token ID
     """
     __tablename__ = "tokens"
-
-    id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     app_id = Column(String, ForeignKey("apps.id"))
-
+    token_id = Column(String, primary_key=True) # Generate UUID
 
 
 class App(Base):
