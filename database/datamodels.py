@@ -24,11 +24,6 @@ class HTTPError(BaseModel):
 
 
 class updateApp(BaseModel):
-    user_id: Optional[str]
-    password:Optional[str]
-    name: Optional[str]
-    email: Optional[str]
-    contact: Optional[str]
     app_name: Optional[str]
     
     
