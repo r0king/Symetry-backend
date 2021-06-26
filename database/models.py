@@ -54,7 +54,7 @@ class Logging(Base):
     """
     __tablename__ = "logs"
 
-    id = Column(Integer, primary_key=True)
+
     user_id = Column(Integer, ForeignKey("users.id"))
     app_id = Column(String, ForeignKey("apps.id"))
     timestamp = Column(DateTime, server_default=func.now())
@@ -75,7 +75,7 @@ class Token(Base):
 class App(Base):
     """
     APP MODEL
-    App ID, App Secret(Hashed), App Name, Email, Password(Hashed), User ID (many to many)
+    App ID, App Secret(Hashed), App Name, Password(Hashed), User ID (many to many)
     """
     __tablename__ = "apps"
 
