@@ -15,6 +15,8 @@ def get_user_by_email(db: Session, email: str):
 
 def get_users(db: Session, skip: int = 0, limit: int = None, identify_by=dict , sort_by="id", sort_order="asc"):
 
+    if is_active is False:
+        return None
     if limit is None:
         return db.query(models.User).filter_by(**identify_by).offset(skip).order_by("%s %s" % (sort_by, sort_order)).all()
 
