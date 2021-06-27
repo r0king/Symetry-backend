@@ -5,6 +5,8 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
 
+from sqlalchemy.sql.expression import true
+
 class CreateLog(BaseModel):
     """Create Log Schema"""
     app_id: int
@@ -22,17 +24,20 @@ class Log(CreateLog):
         orm_mode = True
 
 
-class SessionRead(BaseModel):
-    # Session read schema
-    id: Optional[int] = None
-    user_id: int
-
-class SessionSchema(SessionRead):
+class SessionSchema(BaseModel):
     #  session schema
-    token:str
-    save_session:bool
-    timestamp:str
+    id: int
+    user_id: int
 
     class Config:
         # Enable ORM mode
         orm_mode = True
+
+class SessionReturn(SessionSchema):
+    # Session return schema
+
+    id: int
+    token:str
+    save_session:bool = true
+    timestamp: datetime
+
