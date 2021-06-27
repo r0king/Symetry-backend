@@ -27,9 +27,7 @@ def update_user(db: Session, user_id,user_update_data:datamodels.UserUpdate ):
     for var, value in vars(user_update_data).items():
         if value:
             setattr(query, var, value)
-    db.add(query)
-    db.commit()
-    db.refresh(query)
+    commit_changes_to_object(query)
 
     return query
 
@@ -39,9 +37,7 @@ def update_user(db: Session, user_id,user_update_data:datamodels.UserUpdate ):
 def create_user(db: Session, user: datamodels.CreateUser):
     user.password = user.password + "notreallyhashed"
     db_user = models.User(**user.dict())
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    commit_changes_to_object(query)
     
     return db_user
 
@@ -49,6 +45,4 @@ def create_user(db: Session, user: datamodels.CreateUser):
 def delete_user(user_id , db: Session):
     query=db.query(models.User).filter_by(user_id= user_id).first()
     query.is_active=False
-    db.add(query)
-    db.commit()
-    db.refresh(query)
+    commit_changes_to_object(query)
