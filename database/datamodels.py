@@ -24,9 +24,15 @@ class Log(CreateLog):
 
 class SessionSchema(BaseModel):
     #  session schema
-    session_id: Optional[int] = None
+    id: Optional[int] = None
     user_id: int
 
     class Config:
         # Enable ORM mode
         orm_mode = True
+
+class SessionReturn(SessionSchema):
+    # Session return schema
+    token:str
+    save_session:bool
+    timestamp:str
