@@ -21,9 +21,9 @@ def delete_app(db:Session, app:App, app_id:str):
     db.delete(query)
     commit_changes_to_object(db, query)
 
-def update_app(db:Session, app:App, update_app:updateApp, user_id:str):
+def update_app(db:Session, app:App, update_app:updateApp, app_id:str):
     """To update the app profile"""
-    query=db.query(App).filter(app.user_id== user_id)
+    query=db.query(App).filter(app.app_id== app_id)
     if query is None:
          raise HTTPException(status_code=409, detail="App not found.")
     for name,entry in vars(app.dict(exclude_none=True)):
