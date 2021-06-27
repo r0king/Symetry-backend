@@ -46,7 +46,7 @@ def get_apps(db: Session, app_id: str, user_id: str, name: str, app_name:str, li
         return db.query(App).filter(App.app_id == app_id).all()
     
     if app_name:
-        return db.query(App).filter(App.app_name == app_name).first()
+        return db.query(App).filter(App.app_name == app_name).all()
     return query.all()
 
 
