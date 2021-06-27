@@ -6,7 +6,7 @@ from database import models, datamodels
 
 
 def get_user(db: Session, id: int):
-    return db.query(models.User).filter(models.User.id == id).first()
+    return db.query(models.User).filter_by(is_active=True).filter(models.User.id == id).first()
 
 
 def get_user_by_email(db: Session, email: str):
