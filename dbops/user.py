@@ -16,7 +16,7 @@ def get_user_by_email(db: Session, email: str):
 def get_users(db: Session, skip: int = 0, limit: int = None, identify_by=dict , sort_by="id", sort_order="asc"):
 
     if limit is None:
-        return db.query(models.User).filter_by(is_active=True).offset(skip).order_by("%s %s" % (sort_by, sort_order)).all()
+        return db.query(models.User).filter_by(is_active=True).filter_by(**identify_by).offset(skip).order_by("%s %s" % (sort_by, sort_order)).all()
 
     return db.query(models.User).filter_by(**identify_by).offset(skip).limit(limit).order_by("%s %s" % (sort_by, sort_order)).all()
 
