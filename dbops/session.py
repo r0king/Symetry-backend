@@ -3,12 +3,12 @@ from sqlalchemy import or_
 from sqlalchemy.sql.expression import desc
 from dbops.common import commit_changes_to_object
 from database.models import Session as SessionTable
-from database.datamodels import SessionSchema
+from database.datamodels import SessionRead
 
 
 def list_sessions(
         db: Session,
-        session:  SessionSchema
+        session:  SessionRead
         
         ):        # get all sessions of user
 
@@ -24,7 +24,7 @@ def get_session_by_id(
 
 def delete_session(
         db: Session,
-        session: SessionSchema):
+        session: SessionRead):
                                         # delete session 
     query = db.query(SessionTable).filter_by(SessionTable.user_id ==
                                           session.user_id, SessionTable.id == session.id)
@@ -37,7 +37,7 @@ def delete_session(
 
 def create_session(
         database: Session,
-        session: SessionSchema):        # create session with user id
+        session: SessionRead):        # create session with user id
 
     user_session = SessionTable(**session.dict())
     commit_changes_to_object(database, user_session)

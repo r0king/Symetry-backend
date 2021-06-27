@@ -22,17 +22,17 @@ class Log(CreateLog):
         orm_mode = True
 
 
-class SessionSchema(BaseModel):
-    #  session schema
+class SessionRead(BaseModel):
+    # Session read schema
     id: Optional[int] = None
     user_id: int
+
+class SessionSchema(SessionRead):
+    #  session schema
+    token:str
+    save_session:bool
+    timestamp:str
 
     class Config:
         # Enable ORM mode
         orm_mode = True
-
-class SessionReturn(SessionSchema):
-    # Session return schema
-    token:str
-    save_session:bool
-    timestamp:str
