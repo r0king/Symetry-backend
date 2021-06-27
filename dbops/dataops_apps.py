@@ -1,8 +1,10 @@
 from fastapi import FastAPI, HTTPException, applications
-from sqlalchemy.orm import Session, update
+from sqlalchemy.orm import Session
 from dbops.common import commit_changes_to_object
 from database.models import App
 from database.datamodels import CreateApp,updateApp
+from sqlalchemy import update, func
+
 
 def create_app(db:Session, app:CreateApp):
     """To create a new entry"""
@@ -31,10 +33,12 @@ def update_app(db:Session, app:App, update_app:updateApp, app_id:str):
     commit_changes_to_object(db, query)
     return query
 
-def get_apps(db: Session, app_id: str, user_id: str, name: str, app_name:str, limit = None, identify_by: dict = dict, offset: int = 0, sort_by: str = "user_id", order: str = "asc"):
+def get_apps(db: Session, app_id: str, user_id: str, name: str, app_name:str, limit = None, identify_by: dict = dict, offset: int = 0, 
+sort_by: str = "user_id", order: str = "asc"):
     """Displays all the app profiles"""
     query = db.query(App).filter_by(**identify_by).offset(offset).limit(limit).\
         order_by("%s %s" % (sort_by, order))
+    total = db.query(func.count(App.app_id)).scalar()
     
     if user_id:
         return db.query(App).filter(App.user_id == user_id).all()
@@ -47,6 +51,6 @@ def get_apps(db: Session, app_id: str, user_id: str, name: str, app_name:str, li
     
     if app_name:
         return db.query(App).filter(App.app_name == app_name).all()
-    return query.all()
+    return [{'Total number of rows ': total}, query.all()]
 
 
