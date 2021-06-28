@@ -41,7 +41,7 @@ class Session(Base):
     __tablename__ = "sessions"
 
     id = Column(Integer, primary_key=True)
-    token = Column(String, unique=True, nullable=False)
+    hashed_token = Column(String, unique=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
     timestamp = Column(DateTime, server_default=func.now())
     save_session = Column(Boolean, default=False)

@@ -1,17 +1,16 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from sqlalchemy.sql.expression import desc
 from dbops.common import commit_changes_to_object
 from database.models import Session as SessionTable
-from database.datamodels import SessionSchema
-
+from database.datamodels import SessionCreate
+from hashlib import sha256
 
 def list_sessions(
     db: Session,
     identify_by: dict = dict,
     offset: int = 0,
     limit=None,
-    sort_by: str = "time",
+    sort_by: str = "timestamp",
     order: str = "desc"
 ):                      # get all sessions
     query = db.query(SessionTable).filter_by(**identify_by).offset(offset).\
@@ -50,9 +49,15 @@ def delete_session(
 
 def create_session(
         database: Session,
-        session: SessionSchema):        # create session with user id
+        token:str,
+        session: SessionCreate):
 
-    user_session = SessionTable(**session.dict())
+    user_session = SessionTable(
+            **session.dict(),
+            hashed_token =sha256(token),    #save hashed token
+
+    )
     commit_changes_to_object(database, user_session)
 
-    return user_session
+    return token            #return user unhashed token
+

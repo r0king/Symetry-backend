@@ -7,6 +7,7 @@ from typing import Optional
 
 from sqlalchemy.sql.expression import true
 
+
 class CreateLog(BaseModel):
     """Create Log Schema"""
     app_id: int
@@ -24,20 +25,30 @@ class Log(CreateLog):
         orm_mode = True
 
 
-class SessionSchema(BaseModel):
-    #  session schema
-    id: int
+class SessionRead(BaseModel):
+    # Session read schema
+    id: Optional[int] = None
     user_id: int
 
+
+class SessionCreate(SessionRead):
+    #  session schema for create
+
+    id: int
+    save_session: bool = true
+    # timestamp: datetime
+    
     class Config:
         # Enable ORM mode
         orm_mode = True
 
-class SessionReturn(SessionSchema):
-    # Session return schema
+class SessionSchema(SessionRead):
+    #  session schema
 
     id: int
-    token:str
-    save_session:bool = true
+    save_session: bool = true
     timestamp: datetime
-
+    hashed_token:str
+    class Config:
+        # Enable ORM mode
+        orm_mode = True
