@@ -13,9 +13,12 @@ def list_sessions(
     order: str = "desc",
     sort_by: str = "timestamp"
 ):                      # get all sessions
-    query = db.query(SessionTable).filter_by(**identify_by).offset(offset).\
+    query = db.query(SessionTable)\
+        .filter_by(**identify_by)\
+        .offset(offset).\
         order_by("%s %s" % (sort_by, order))
-        
+
+    
     # count = db.execute(
     #                 # db
     #                 #     .query(SessionTable).filter_by(**identify_by).offset(offset)
@@ -23,14 +26,20 @@ def list_sessions(
     #                     query.statement.with_only_columns([func.count()])
     #                 ).scalar()
 
+    count = db.query(func.count('*'))\
+        .select_from(SessionTable)\
+        .filter_by(**identify_by)\
+        .offset(offset).\
+        order_by("%s %s" % (sort_by, order))
+        
     if limit:
         return [
-            {'Session count': query.count()},
+            {'Session count': count.scalar()},
             query.limit(limit).all()
         ]
 
     return [
-        {'Session count': query.count()},
+        {'Session count': count.scalar()},
         query.all()]
 
 
@@ -65,4 +74,3 @@ def create_session(
     commit_changes_to_object(database, user_session)
 
     return token            #return user unhashed token
-
