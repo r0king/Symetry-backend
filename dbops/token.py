@@ -6,23 +6,20 @@ from database.datamodels import TokenSchema
 
 def get_token_id(
         db: Token,
-        Token: TokenSchema):        # get token id 
-
+        Token: TokenSchema,app_id: int,user_id: int):  
+              if(user_id)# get token id 
+                return db.query(Token).filter_by(user_id == user_id)
+              if(app_id)
+                return db.query(Token).filter_by(app_id == app_id)
     return db.query(Token).filter(Token.user_id == session.user_id, Token.app_id == session.app_id).first()
 
-
-def get_token_id_by_app_id(
-        db: Token,
-        app_id: int):                   # get token id with app id
-
-    return db.query(Token).filter_by(app_id == app_id)
 
 
 def get_token_id_by_user_id(
         db:Token,
         user_id: int):                  # get token id with user id
 
-    return db.query(Token).filter_by(user_id == user_id)
+    return db.query(Token).filter_by(user_id == user_id).first()
 
 
 def create_token_id(
