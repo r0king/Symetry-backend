@@ -16,21 +16,21 @@ def list_sessions(
     query = db.query(SessionTable).filter_by(**identify_by).offset(offset).\
         order_by("%s %s" % (sort_by, order))
         
-    count = db.execute(
-                    # db
-                    #     .query(SessionTable).filter_by(**identify_by).offset(offset)
-                    #     .order_by("%s %s" % (sort_by, order))
-                        query.statement.with_only_columns([func.count()])
-                    ).scalar()
+    # count = db.execute(
+    #                 # db
+    #                 #     .query(SessionTable).filter_by(**identify_by).offset(offset)
+    #                 #     .order_by("%s %s" % (sort_by, order))
+    #                     query.statement.with_only_columns([func.count()])
+    #                 ).scalar()
 
     if limit:
         return [
-            {'Session count': count},
+            {'Session count': query.count()},
             query.limit(limit).all()
         ]
 
     return [
-        {'Session count': count},
+        {'Session count': query.count()},
         query.all()]
 
 
