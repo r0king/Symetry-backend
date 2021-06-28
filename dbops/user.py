@@ -23,7 +23,7 @@ def get_users(db: Session, skip: int = 0, limit: int = None, identify_by=dict , 
 def update_user(db: Session, user_id,user_update_data:datamodels.UserUpdate ):
 
 
-    query=get_user_by_id(db, user_id).filter_by(user_id= user_id).first()
+    query=get_user_by_id(db, user_id)
     for var, value in vars(user_update_data).items():
         if value:
             setattr(query, var, value)
@@ -43,6 +43,6 @@ def create_user(db: Session, user: datamodels.CreateUser):
 
 
 def delete_user(user_id , db: Session):
-    query=get_user_by_id(db, user_id).filter_by(user_id= user_id).first()
+    query=get_user_by_id(db, user_id)
     query.is_active=False
     commit_changes_to_object(query)
