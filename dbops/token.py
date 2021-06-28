@@ -32,9 +32,9 @@ def create_token_id(
     return token_id
 def delete_token(
         db: Token,
-        token: TokenSchema):        # delete token id 
+        token: TokenSchema, token_id: str):        # delete token id 
 
-    query = db.query(Token).filter(Token.user_id == session.user_id, Token.app_id == session.app_id).first()
+    query = db.query(Token).filter(Token.token_id == token_id).first()
     db.delete(query)
     db.commit()
     db.refresh(query)
