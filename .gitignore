@@ -120,3 +120,4 @@ dmypy.json
 # Custom patterns
 
 .idea
+test.py
