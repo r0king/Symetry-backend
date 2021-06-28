@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import user
+from dbops.common import commit_changes_to_object
 
 
 from database import models, datamodels
@@ -24,7 +25,7 @@ def update_user(db: Session, user_id,user_update_data:datamodels.UserUpdate ):
 
 
     query=get_user_by_id(db, user_id)
-    for var, value in vars(user_update_data).items():
+    for var, value in vars(user_update_data):
         if value:
             setattr(query, var, value)
     commit_changes_to_object(query)
@@ -37,7 +38,7 @@ def update_user(db: Session, user_id,user_update_data:datamodels.UserUpdate ):
 def create_user(db: Session, user: datamodels.CreateUser):
     user.password = user.password + "notreallyhashed"
     db_user = models.User(**user.dict())
-    commit_changes_to_object(query)
+    commit_changes_to_object(db, db_user)
     
     return db_user
 
