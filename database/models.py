@@ -34,7 +34,7 @@ class Session(Base):
     this is for the user to log into our program only.
     no session data of the 3rd party apps are stored here.
 
-    A = Sha(username+TOKEN-ID+hashedpassword+SECRET)
+    A= Sha(username+TOKEN-ID+hashedpassword+SECRET)
     ->store into Sha(A) Sessions table.
 
     """
