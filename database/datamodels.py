@@ -1,12 +1,76 @@
 """
-All the schemas for Symmetry
+Datamodels aka Schema
 """
 from datetime import datetime
-from pydantic import BaseModel
 from typing import Optional
+from pydantic import BaseModel
+from .roles import Roles
 
-from sqlalchemy.sql.expression import true
 
+# User Schemas
+
+class UserBase(BaseModel):
+    """
+    Base User Schema
+    """
+    username: str
+    name:str
+    email:str
+    contact:str
+    role: Roles
+
+
+class CreateUser(UserBase):
+    """
+    Create User Schema
+    """
+    password:str
+
+
+class UserUpdate(BaseModel):
+    """
+    Update user schema
+    """
+    username: Optional[str]
+    email: Optional[str]
+    contact:Optional[str]
+    role: Optional[Roles]
+    password: Optional[str]
+
+
+class User(UserBase):
+    """
+    Full User Schema(As in DB)
+    """
+    id: int
+    hashed_password:str
+    is_active: bool
+
+
+# App Schemas
+
+class CreateApp(BaseModel):
+    """Create App Schema"""
+    user_id: str
+    name: str
+    app_name:str
+
+class App(CreateApp):
+    """Read App Schema"""
+    app_id: str
+    app_secret: str
+
+    class Config:
+        """Enable ORM mode"""
+        orm_mode = True
+
+
+class UpdateApp(BaseModel):
+    """Update App Schema"""
+    app_name: Optional[str]
+
+
+# Log Schemas
 
 class CreateLog(BaseModel):
     """Create Log Schema"""
@@ -17,7 +81,7 @@ class CreateLog(BaseModel):
 
 class Log(CreateLog):
     """Read Log Schema"""
-    time: datetime
+    timestamp: datetime
     id: int
 
     class Config:
@@ -25,30 +89,20 @@ class Log(CreateLog):
         orm_mode = True
 
 
-class SessionRead(BaseModel):
-    # Session read schema
-    id: Optional[int] = None
+class SessionCreate(BaseModel):
+    """Session create schema"""
+
     user_id: int
+    save_session: bool = True
 
 
-class SessionCreate(SessionRead):
-    #  session schema for create
-
-    id: int
-    save_session: bool = true
-    # timestamp: datetime
-    
-    class Config:
-        # Enable ORM mode
-        orm_mode = True
-
-class SessionSchema(SessionRead):
-    #  session schema
+class SessionSchema(SessionCreate):
+    """Session Complete Schema"""
 
     id: int
-    save_session: bool = true
+    token: str
     timestamp: datetime
-    hashed_token:str
+
     class Config:
-        # Enable ORM mode
+        """Enable ORM mode"""
         orm_mode = True
