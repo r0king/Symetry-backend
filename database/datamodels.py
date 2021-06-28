@@ -1,6 +1,7 @@
 """
 Datamodels aka Schema
 """
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 from .roles import Roles
@@ -44,6 +45,23 @@ class User(UserBase):
     id: int
     hashed_password:str
     is_active: bool
+
+    class Config:
+        """Enable ORM mode"""
+        orm_mode = True
+
+
+class CreateLog(BaseModel):
+    """Create Log Schema"""
+    app_id: int
+    user_id: int
+    message: str
+
+
+class Log(CreateLog):
+    """Read Log Schema"""
+    timestamp: datetime
+    id: int
 
     class Config:
         """Enable ORM mode"""

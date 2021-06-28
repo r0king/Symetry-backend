@@ -48,7 +48,7 @@ def update_user(database: Session, user_id: int, user_update_data: datamodels.Us
     """
     Update User
     """
-    db_user=get_user(database, user_id)
+    db_user = get_user(database, user_id)
 
     for var, value in vars(user_update_data).items():
         if value:
