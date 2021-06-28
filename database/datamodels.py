@@ -1,10 +1,15 @@
-from datetime import datetime
+"""
+Datamodels aka Schema
+"""
 from typing import Optional
 from pydantic import BaseModel
-from sqlalchemy.sql.operators import is_
 from .roles import Roles
 
+
 class UserBase(BaseModel):
+    """
+    Base User Schema
+    """
     username: str
     name:str
     email:str
@@ -13,10 +18,17 @@ class UserBase(BaseModel):
 
 
 class CreateUser(UserBase):
-  
+    """
+    Create User Schema
+    """
     password:str
-    
+
+
+
 class UserUpdate(BaseModel):
+    """
+    Update user schema
+    """
     username: Optional[str]
     email: Optional[str]
     contact:Optional[str]
@@ -25,16 +37,14 @@ class UserUpdate(BaseModel):
 
 
 
-
 class User(UserBase):
+    """
+    Full User Schema(As in DB)
+    """
     id: int
     hashed_password:str
     is_active: bool
-    #app_id:int
-    #TODO: app
-
 
     class Config:
         """Enable ORM mode"""
         orm_mode = True
-
