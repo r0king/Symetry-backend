@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from .roles import Roles
 
 
+# User Schemas
+
 class UserBase(BaseModel):
     """
     Base User Schema
@@ -25,7 +27,6 @@ class CreateUser(UserBase):
     password:str
 
 
-
 class UserUpdate(BaseModel):
     """
     Update user schema
@@ -37,7 +38,6 @@ class UserUpdate(BaseModel):
     password: Optional[str]
 
 
-
 class User(UserBase):
     """
     Full User Schema(As in DB)
@@ -46,10 +46,31 @@ class User(UserBase):
     hashed_password:str
     is_active: bool
 
+
+# App Schemas
+
+class CreateApp(BaseModel):
+    """Create App Schema"""
+    user_id: str
+    name: str
+    app_name:str
+
+class App(CreateApp):
+    """Read App Schema"""
+    app_id: str
+    app_secret: str
+
     class Config:
         """Enable ORM mode"""
         orm_mode = True
 
+
+class UpdateApp(BaseModel):
+    """Update App Schema"""
+    app_name: Optional[str]
+
+
+# Log Schemas
 
 class CreateLog(BaseModel):
     """Create Log Schema"""
