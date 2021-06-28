@@ -27,12 +27,12 @@ def get_token_id_by_user_id(
 
 def create_token_id(
         db: Token,
-        token: TokenSchema):        # create session with user id
+        token: TokenSchema):        # create token with user id
 
-    user_session = Token(**session.dict())
+    user_token = Token(**session.dict())
     commit_changes_to_object(database, user_session)
 
-    return user_session
+    return user_token
 def delete_token(
         db: Token,
         token: TokenSchema):        # delete token id 
