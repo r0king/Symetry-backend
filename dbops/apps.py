@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from database.models import App
 from schemas.apps import CreateApp, UpdateApp
-from .common import commit_changes_to_object
+from .common import commit_changes_to_object, list_table
 
 
 def create_app(database: Session, app: CreateApp):
@@ -49,16 +49,10 @@ def update_app(database: Session, updated_app: UpdateApp, app_id: str):
     return db_app
 
 
-def get_apps(
-    database: Session,
-    limit = None,
-    identify_by: dict=dict,
-    offset: int=0,
-    sort_by: str="user_id",
-    order: str="asc"
-):
-    """Displays all the app profiles"""
-    query = database.query(App).filter_by(**identify_by).offset(offset).limit(limit).\
-        order_by("%s %s" % (sort_by, order))
+def list_apps(database: Session, **kwargs):
+    """
+    List Apps
 
-    return query.all()
+    Same Params as for common.list_table
+    """
+    return list_table(database, App, **kwargs)

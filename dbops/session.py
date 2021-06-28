@@ -5,40 +5,16 @@ from hashlib import sha256
 from sqlalchemy.orm import Session
 from database.models import Session as SessionTable
 from schemas.sessions import SessionCreate
-from .common import commit_changes_to_object
+from .common import commit_changes_to_object, list_table
 
 
-def list_sessions(
-    database: Session,
-    identify_by: dict = dict,
-    offset: int = 0,
-    limit=None,
-    order: str = "desc",
-    sort_by: str = "timestamp"
-):
+def list_sessions(database: Session, **kwargs):
     """
     List sessions
 
-    :param limit: Limit the number of results
-    :param identify_by: Dictionary of filters
-    :param offset: Offset(Shift) the results by a certain value
-    :param sort_by: Field to sort by
-    :param order: asc for ascending, desc for descending
+    Same Params as for common.list_table
     """
-
-    query = database.query(SessionTable).filter_by(**identify_by).offset(offset).\
-        order_by("%s %s" % (sort_by, order))
-
-    if limit:
-        return {
-            "count": query.count(),
-            "results": query.limit(limit).all()
-        }
-
-    return {
-        "count": query.count(),
-        "results": query.all()
-    }
+    return list_table(database, SessionTable, **kwargs)
 
 
 def get_session_by_id(database: Session, session_id: int):

@@ -2,7 +2,7 @@
 CRUD Operations on users table
 """
 from sqlalchemy.orm import Session
-from dbops.common import commit_changes_to_object
+from dbops.common import commit_changes_to_object, list_table
 from database import models
 from schemas.users import CreateUser, UserUpdate
 
@@ -21,28 +21,13 @@ def get_user_by_email(database: Session, email: str):
     return database.query(models.User).filter(models.User.email == email).first()
 
 
-def get_users(database: Session,
-    skip: int = 0,
-    limit: int = None,
-    identify_by=dict ,
-    sort_by="id",
-    sort_order="asc"
-):
+def list_users(database: Session, **kwargs):
     """
-    List Users
-    :param database: Database Session
-    :param skip: Offset value
-    :param limit: No of records to be fetched, If None, fetches all records
-    :param identify_by: Dictionary comtaining filters
-    :param sort_by: sort by given field
-    :param sort_order: sort either ascending(asc) or descending(desc)
-    """
-    if limit is None:
-        return database.query(models.User).filter_by(is_active=True).filter_by(**identify_by).\
-            offset(skip).order_by("%s %s" % (sort_by, sort_order)).all()
+    List users
 
-    return database.query(models.User).filter_by(is_active=True).filter_by(**identify_by).\
-        offset(skip).limit(limit).order_by("%s %s" % (sort_by, sort_order)).all()
+    Same Params as for common.list_table
+    """
+    return list_table(database, models.User, **kwargs)
 
 
 def update_user(database: Session, user_id: int, user_update_data: UserUpdate):

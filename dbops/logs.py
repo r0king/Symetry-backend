@@ -2,32 +2,19 @@
 Database opertaions for Logging class
 """
 from sqlalchemy.orm import Session
-from dbops.common import commit_changes_to_object
+from dbops.common import commit_changes_to_object, list_table
 from database.models import Logging
 from schemas.logs import CreateLog
 
 
-def get_all_logs(
-    database: Session,
-    limit = None,
-    identify_by: dict = dict,
-    offset: int = 0,
-    sort_by: str = "timestamp",
-    order: str = "desc"
-):
+def list_logs(database: Session, **kwargs):
     """
-    :param limit: Limit the number of results
-    :param identify_by: Dictionary of filters
-    :param offset: Offset(Shift) the results by a certain value
-    :param sort_by: Field to sort by
-    :param order: asc for ascending, desc for descending
-    """
-    query = database.query(Logging).filter_by(**identify_by).offset(offset).\
-        order_by("%s %s" % (sort_by, order))
+    List logs
 
-    if limit:
-        return query.limit(limit).all()
-    return query.all()
+    Same Params as for common.list_table
+    """
+    return list_table(database, Logging, **kwargs)
+
 
 def read_log_by_id(database: Session, log_id: int):
     """
