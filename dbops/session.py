@@ -10,13 +10,17 @@ def list_sessions(
     identify_by: dict = dict,
     offset: int = 0,
     limit=None,
-    sort_by: str = "timestamp",
-    order: str = "desc"
+    order: str = "desc",
+    sort_by: str = "timestamp"
 ):                      # get all sessions
     query = db.query(SessionTable).filter_by(**identify_by).offset(offset).\
         order_by("%s %s" % (sort_by, order))
-
-    count = db.query(func.count(SessionTable.id)).scalar()
+    count = db.execute(
+                    db
+                        .query(SessionTable).filter_by(**identify_by).offset(offset)
+                        .order_by("%s %s" % (sort_by, order))
+                        .statement.with_only_columns([func.count()])
+                    ).scalar()
 
     if limit:
         return [
