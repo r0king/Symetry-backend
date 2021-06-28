@@ -4,7 +4,7 @@ Database opertaions for Logging class
 from sqlalchemy.orm import Session
 from dbops.common import commit_changes_to_object
 from database.models import Logging
-from database.datamodels import CreateLog
+from schemas.logs import CreateLog
 
 
 def get_all_logs(

@@ -6,7 +6,7 @@ from sqlalchemy import Column, String, Boolean, Integer, Enum, ForeignKey, DateT
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import func
 from database.config_db import Base
-from database.roles import Roles
+from enums.roles import Roles
 
 
 class User(Base):

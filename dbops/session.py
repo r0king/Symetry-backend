@@ -4,8 +4,9 @@ CRUD the session table
 from hashlib import sha256
 from sqlalchemy.orm import Session
 from database.models import Session as SessionTable
-from database.datamodels import SessionCreate
+from schemas.sessions import SessionCreate
 from .common import commit_changes_to_object
+
 
 def list_sessions(
     database: Session,

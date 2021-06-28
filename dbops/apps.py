@@ -4,7 +4,7 @@ CRUD The Apps table
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from database.models import App
-from database.datamodels import CreateApp, UpdateApp
+from schemas.apps import CreateApp, UpdateApp
 from .common import commit_changes_to_object
 
 

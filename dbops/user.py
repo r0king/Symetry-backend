@@ -3,7 +3,8 @@ CRUD Operations on users table
 """
 from sqlalchemy.orm import Session
 from dbops.common import commit_changes_to_object
-from database import models, datamodels
+from database import models
+from schemas.users import CreateUser, UserUpdate
 
 
 def get_user(database: Session, user_id: int):
@@ -44,7 +45,7 @@ def get_users(database: Session,
         offset(skip).limit(limit).order_by("%s %s" % (sort_by, sort_order)).all()
 
 
-def update_user(database: Session, user_id: int, user_update_data: datamodels.UserUpdate):
+def update_user(database: Session, user_id: int, user_update_data: UserUpdate):
     """
     Update User
     """
@@ -59,7 +60,7 @@ def update_user(database: Session, user_id: int, user_update_data: datamodels.Us
     return db_user
 
 
-def create_user(database: Session, user: datamodels.CreateUser):
+def create_user(database: Session, user: CreateUser):
     """
     Create User in Database
     """
