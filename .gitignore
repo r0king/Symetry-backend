@@ -120,4 +120,6 @@ dmypy.json
 # Custom patterns
 
 .idea
-test.py
+
+Dockerfile
+docker-compose.yml

@@ -1,0 +1,68 @@
+"""
+CRUD Operations on users table
+"""
+from sqlalchemy.orm import Session
+from app.dbops.common import commit_changes_to_object, list_table
+from app.database import models
+from app.schemas.users import CreateUser, UserUpdate
+
+
+def get_user(database: Session, user_id: int):
+    """
+    Get User By Primary Key
+    """
+    return database.query(models.User).filter_by(is_active=True, id=user_id).first()
+
+
+def get_user_by_email(database: Session, email: str):
+    """
+    Get User By Unique Email
+    """
+    return database.query(models.User).filter(models.User.email == email).first()
+
+
+def list_users(database: Session, **kwargs):
+    """
+    List users
+
+    Same Params as for common.list_table
+    """
+    return list_table(database, models.User, **kwargs)
+
+
+def update_user(database: Session, user_id: int, user_update_data: UserUpdate):
+    """
+    Update User
+    """
+    db_user = get_user(database, user_id)
+
+    if user_update_data.password is not None:
+        user_update_data.password += "notreallyhashed"
+
+    for var, value in vars(user_update_data).items():
+        if value:
+            setattr(db_user, var, value)
+
+    commit_changes_to_object(database, db_user)
+
+    return db_user
+
+
+def create_user(database: Session, user: CreateUser):
+    """
+    Create User in Database
+    """
+    user.password += "notreallyhashed"
+    db_user = models.User(**user.dict())
+    commit_changes_to_object(database, db_user)
+
+    return db_user
+
+
+def delete_user(database: Session, user_id):
+    """
+    Soft delete user
+    """
+    db_user=get_user(database, user_id)
+    db_user.is_active=False
+    commit_changes_to_object(database, db_user)
