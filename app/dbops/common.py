@@ -2,7 +2,7 @@
 Common utilities for database operations
 """
 from sqlalchemy.orm import Session
-from database.config_db import Base
+from app.database.config_db import Base
 
 
 def commit_changes_to_object(database: Session, obj: Base):
@@ -15,7 +15,7 @@ def commit_changes_to_object(database: Session, obj: Base):
 def list_table(
     database: Session,
     model,
-    identify_by: dict=dict,
+    identify_by: dict=None,
     offset: int=0,
     limit: int=None,
     order: str="desc",
@@ -30,6 +30,9 @@ def list_table(
     :param sort_by: Field to sort by
     :param order: asc for ascending, desc for descending
     """
+    if identify_by is None:
+        identify_by = {}
+        
     query = database.query(model).filter_by(**identify_by).offset(offset)
 
     if sort_by:

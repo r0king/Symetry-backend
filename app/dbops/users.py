@@ -2,9 +2,9 @@
 CRUD Operations on users table
 """
 from sqlalchemy.orm import Session
-from dbops.common import commit_changes_to_object, list_table
-from database import models
-from schemas.users import CreateUser, UserUpdate
+from app.dbops.common import commit_changes_to_object, list_table
+from app.database import models
+from app.schemas.users import CreateUser, UserUpdate
 
 
 def get_user(database: Session, user_id: int):
@@ -36,6 +36,9 @@ def update_user(database: Session, user_id: int, user_update_data: UserUpdate):
     """
     db_user = get_user(database, user_id)
 
+    if user_update_data.password is not None:
+        user_update_data.password += "notreallyhashed"
+
     for var, value in vars(user_update_data).items():
         if value:
             setattr(db_user, var, value)
@@ -49,7 +52,7 @@ def create_user(database: Session, user: CreateUser):
     """
     Create User in Database
     """
-    user.password = user.password + "notreallyhashed"
+    user.password += "notreallyhashed"
     db_user = models.User(**user.dict())
     commit_changes_to_object(database, db_user)
 

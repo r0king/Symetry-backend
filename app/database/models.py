@@ -1,12 +1,15 @@
 """
 Database Models
 """
+from re import T
 import uuid
+# For postgres
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Column, String, Boolean, Integer, Enum, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import func
-from database.config_db import Base
-from enums.roles import Roles
+from app.database.config_db import Base
+from app.enums.roles import Roles
 
 
 class User(Base):
@@ -22,7 +25,7 @@ class User(Base):
     name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     contact = Column(String, unique=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
+    password = Column(String, nullable=False)
     role = Column(Enum(Roles), default=Roles.USER, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
 
@@ -56,7 +59,7 @@ class Logging(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    app_id = Column(String, ForeignKey("apps.id"))
+    app_id = Column(UUID(as_uuid=True), ForeignKey("apps.id"))
     timestamp = Column(DateTime, server_default=func.now())
     message = Column(String)
 
@@ -67,9 +70,9 @@ class Token(Base):
      User ID, App ID, Token ID
     """
     __tablename__ = "tokens"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4) # Generate UUID
     user_id = Column(Integer, ForeignKey("users.id"))
-    app_id = Column(String, ForeignKey("apps.id"))
-    token_id = Column(String, primary_key=True, default=uuid.uuid4) # Generate UUID
+    app_id = Column(UUID(as_uuid=True), ForeignKey("apps.id"))
     timestamp = Column(DateTime, server_default=func.now())
 
 class App(Base):
@@ -79,9 +82,9 @@ class App(Base):
     """
     __tablename__ = "apps"
 
-    id = Column(String, primary_key=True)
-    app_sec = Column(String, unique=True, nullable=False)
-    app_name = Column(String, nullable=False)
-    user_id = Column(Integer, ForeignKey("user.id"))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    secret = Column(String, nullable=False)
+    name = Column(String, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"))
 
-    user = relationship("User", back_populates="app")
+    user = relationship("User")

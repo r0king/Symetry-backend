@@ -2,13 +2,15 @@
 Logs Schemas
 """
 from datetime import datetime
+from typing import Optional
+import uuid
 from pydantic import BaseModel
 
 
 class CreateLog(BaseModel):
     """Create Log Schema"""
-    app_id: int
-    user_id: int
+    app_id: Optional[uuid.UUID]
+    user_id: Optional[int]
     message: str
 
 

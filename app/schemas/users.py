@@ -3,7 +3,7 @@ User schemas
 """
 from typing import Optional
 from pydantic import BaseModel
-from enums.roles import Roles
+from app.enums.roles import Roles
 
 
 class UserBase(BaseModel):
@@ -32,6 +32,7 @@ class UserUpdate(BaseModel):
     email: Optional[str]
     contact:Optional[str]
     role: Optional[Roles]
+    name: Optional[str]
     password: Optional[str]
 
 

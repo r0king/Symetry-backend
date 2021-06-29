@@ -1,10 +1,9 @@
 """
 CRUD the session table
 """
-from hashlib import sha256
 from sqlalchemy.orm import Session
-from database.models import Session as SessionTable
-from schemas.sessions import SessionCreate
+from app.database.models import Session as SessionTable
+from app.schemas.sessions import SessionCreate
 from .common import commit_changes_to_object, list_table
 
 
@@ -31,7 +30,6 @@ def delete_session(database: Session, session_id: int):
     session_in_db = get_session_by_id(database, session_id)
     database.delete(session_in_db)
     database.commit()
-    database.refresh()
 
     return session_in_db
 
@@ -40,7 +38,8 @@ def create_session(database: Session, token: str, session: SessionCreate):
     """
     Create Session
     """
-    user_session = SessionTable(**session.dict(),token=sha256(token))
+    token += "notreallyhashed"
+    user_session = SessionTable(**session.dict(), token=token)
     commit_changes_to_object(database, user_session)
 
     return user_session

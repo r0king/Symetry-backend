@@ -2,6 +2,7 @@
 Token schemas
 """
 from datetime import datetime
+import uuid
 from pydantic import BaseModel
 
 
@@ -9,7 +10,7 @@ class TokenCreate(BaseModel):
     """
     Token Create schemas
     """
-    app_id: int
+    app_id: uuid.UUID
     user_id: int
 
     # Store the same timestamp used while hashing the token
@@ -20,7 +21,7 @@ class TokenSchema(TokenCreate):
     """
     Token Full Schema
     """
-    token_id: str
+    id: uuid.UUID
 
     class Config:
         """Enable ORM Mode"""

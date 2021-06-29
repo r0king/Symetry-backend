@@ -2,9 +2,9 @@
 Database opertaions for Logging class
 """
 from sqlalchemy.orm import Session
-from dbops.common import commit_changes_to_object, list_table
-from database.models import Logging
-from schemas.logs import CreateLog
+from app.dbops.common import commit_changes_to_object, list_table
+from app.database.models import Logging
+from app.schemas.logs import CreateLog
 
 
 def list_logs(database: Session, **kwargs):
