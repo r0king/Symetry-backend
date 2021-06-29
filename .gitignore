@@ -121,6 +121,5 @@ dmypy.json
 
 .idea
 
-test
 Dockerfile
 docker-compose.yml

@@ -40,4 +40,3 @@ def delete_token(database: Session, token_id: str):
     db_token = get_token_by_id(database, token_id)
     database.delete(db_token)
     database.commit()
-    database.refresh(database)

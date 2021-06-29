@@ -1,7 +1,6 @@
 """
 Database Models
 """
-from re import T
 import uuid
 # For postgres
 from sqlalchemy.dialects.postgresql import UUID

@@ -31,5 +31,3 @@ def root():
     }
 
     return detail
-
-from .test import test

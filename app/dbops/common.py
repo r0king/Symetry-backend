@@ -32,7 +32,7 @@ def list_table(
     """
     if identify_by is None:
         identify_by = {}
-        
+
     query = database.query(model).filter_by(**identify_by).offset(offset)
 
     if sort_by:
