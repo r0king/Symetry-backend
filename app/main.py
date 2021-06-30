@@ -68,4 +68,7 @@ def root():
 
 # DELETE     /auth/app/{app_id}/    Soft Delete App by IDreturn [app ]
 
-# GET        /log/                  Gets the logs updated till thenreturn [log ]
+# GET        /log/                  Gets the logs updated till then[List[log]] AUTHENTICATED
+
+# Throw 403, if user has doesn't have permissions
+# return logs from database
