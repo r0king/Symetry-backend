@@ -18,13 +18,39 @@ def root():
     }
 
     return detail
-# GET        /auth/user/            Get Current User Inforeturn [user ]
+# GET        /auth/me/            Get Current User Info[user] AUTHENTICATED
 
-# POST       /auth/user/            Create a new User (Registration)return [user ]
+# Retrieve row from database
+# Return user
 
-# PATCH      /auth/user/{user_id}/  Update Existing User Inforeturn [user  ]
+# POST       /auth/user/            Create a new User (Registration)[user ]
 
-# DELETE     /auth/user/{user_id}/  Soft Delete User by IDreturn [user  ]
+# Validate
+# Throw if email or username is duplicate
+# Create user in database
+# Return new user
+
+# GET       /auth/user/{user_id}/       Get User By ID[user] AUTHENTICATED
+
+# Throw 403, if user has doesn't have permissions
+# Throw 404, if user with user_id doesn't exist in database
+# Retrieve row from database
+# Return user
+
+# PATCH      /auth/user/{user_id}/  Update Existing User Info[user] AUTHENTICATED
+
+# Validate
+# Throw 403, if user has doesn't have permissions
+# Throw 404, if user with user_id doesn't exist in database
+# Update User's data in database
+# Return updated user
+
+# DELETE     /auth/user/{user_id}/  Soft Delete User by ID[user] AUTHENTICATED
+
+# Throw 403, if user has doesn't have permissions
+# Throw 404, if user with user_id doesn't exist in database
+# Soft delete user
+# Return deleted user
 
 # POST       /auth/login/           Return tokenID by submitting credentialsreturn ["token_id": STRING  ]
 
@@ -42,4 +68,7 @@ def root():
 
 # DELETE     /auth/app/{app_id}/    Soft Delete App by IDreturn [app ]
 
-# GET        /log/                  Gets the logs updated till thenreturn [log ]
+# GET        /log/                  Gets the logs updated till then[List[log]] AUTHENTICATED
+
+# Throw 403, if user has doesn't have permissions
+# return logs from database
