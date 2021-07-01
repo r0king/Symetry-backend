@@ -4,7 +4,7 @@ CRUD the session table
 from sqlalchemy.orm import Session
 from app.database.models import Session as SessionTable
 from app.schemas.sessions import SessionCreate
-from .common import commit_changes_to_object, list_table
+from .common import commit_changes_to_object, hash_string, list_table
 
 
 def list_sessions(database: Session, **kwargs):
@@ -23,6 +23,12 @@ def get_session_by_id(database: Session, session_id: int):
     return database.query(SessionTable).filter_by(id=session_id).first()
 
 
+def get_session_by_token(database: Session, token: str):
+    """
+    Get session info by token
+    """
+    return database.query(SessionTable).filter_by(token=token)
+
 def delete_session(database: Session, session_id: int):
     """
     Delete Session
@@ -38,7 +44,7 @@ def create_session(database: Session, token: str, session: SessionCreate):
     """
     Create Session
     """
-    token += "notreallyhashed"
+    token = hash_string(token)
     user_session = SessionTable(**session.dict(), token=token)
     commit_changes_to_object(database, user_session)
 

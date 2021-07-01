@@ -44,10 +44,10 @@ class Session(Base):
 
     id = Column(Integer, primary_key=True)
     token = Column(String, unique=True, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"))
     timestamp = Column(DateTime, server_default=func.now())
     save_session = Column(Boolean, default=False)
-
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User")
 
 class Logging(Base):
     """
@@ -57,11 +57,11 @@ class Logging(Base):
     __tablename__ = "logs"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
     app_id = Column(UUID(as_uuid=True), ForeignKey("apps.id"))
     timestamp = Column(DateTime, server_default=func.now())
     message = Column(String)
-
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User")
 
 class Token(Base):
     """
@@ -70,9 +70,10 @@ class Token(Base):
     """
     __tablename__ = "tokens"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4) # Generate UUID
-    user_id = Column(Integer, ForeignKey("users.id"))
     app_id = Column(UUID(as_uuid=True), ForeignKey("apps.id"))
     timestamp = Column(DateTime, server_default=func.now())
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User")
 
 class App(Base):
     """
