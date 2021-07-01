@@ -11,11 +11,14 @@ Backend API Server
 ```
 git clone  <repoID>
 cd symetry
-apt install python-pip
-pip install virtualenv
+
+# Without Docker
 virtualenv env
 source env/bin/activate
 pip install -r requirements.txt
+
+# With docker(and compose)
+docker-compose up -d
 ```
 
 ### Environment Variables
