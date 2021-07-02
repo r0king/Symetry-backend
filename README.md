@@ -21,54 +21,6 @@ pip install -r requirements.txt
 docker-compose up -d
 ```
 
-### Testing
-
-Ensure docker and docker-compose are installed.
-
-- For Linux/Mac, Verify by
-
-  ```
-  docker -v
-  docker-compose -v
-  ```
-
-- Start the container by
-
-  ```
-  docker-compose up -d
-  ```
-
-- Run python inside the container
-
-  ```
-  docker-compose run app python
-  ```
-
-**All subsequent commands are meant to be executed in this python shell**
-
-- Loading Database Connection
-
-  ```
-  from test import database
-  ```
-
-- Import schema and dbops functions to do whatever you want
-
-  - Creating a user
-
-    ```
-    from app.dbops.users import create_user
-
-    from app.enums.roles import Roles
-
-    from app.schemas.users import CreateUser
-
-    user = CreateUser(username="bla", name="sbdjf", email="askd@jadif.com", contact="121923", role=Roles.USER, password="hi")
-
-    create_user(database, user)
-    ```
-
-
 ### Environment Variables
 
 | NAME | DESC | TYPE | DEFAULT | REQUIRED |
