@@ -2,7 +2,8 @@
 CRUD Operations on users table
 """
 from sqlalchemy.orm import Session
-from app.dbops.common import commit_changes_to_object, list_table
+from sqlalchemy import or_
+from app.dbops.common import commit_changes_to_object, hash_string, list_table
 from app.database import models
 from app.schemas.users import CreateUser, UserUpdate
 
@@ -14,11 +15,13 @@ def get_user(database: Session, user_id: int):
     return database.query(models.User).filter_by(is_active=True, id=user_id).first()
 
 
-def get_user_by_email(database: Session, email: str):
+def get_user_by_email_or_username(database: Session, email: str = None, username: str = None):
     """
-    Get User By Unique Email
+    Get User By Unique Email Or Username
     """
-    return database.query(models.User).filter(models.User.email == email).first()
+    return database.query(models.User).filter(
+        (models.User.email == email) | (models.User.username == username)
+    ).first()
 
 
 def list_users(database: Session, **kwargs):
@@ -37,7 +40,7 @@ def update_user(database: Session, user_id: int, user_update_data: UserUpdate):
     db_user = get_user(database, user_id)
 
     if user_update_data.password is not None:
-        user_update_data.password += "notreallyhashed"
+        user_update_data.password = hash_string(user_update_data.password)
 
     for var, value in vars(user_update_data).items():
         if value:
@@ -52,7 +55,7 @@ def create_user(database: Session, user: CreateUser):
     """
     Create User in Database
     """
-    user.password += "notreallyhashed"
+    user.password = hash_string(user.password)
     db_user = models.User(**user.dict())
     commit_changes_to_object(database, db_user)
 
