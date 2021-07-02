@@ -129,11 +129,15 @@ def destroy_user(
 
 # POST       /auth/login/           Return tokenID by submitting credentialsreturn ["token_id": STRING  ]
 
-# POST       /auth/validate/        Creates a session by submitting tokenIDreturn [{"token": STRING, "type": STRING}  ]
+# POST       /auth/logout/          Terminates the sessionreturn [loged out sussesfully]
 
-# POST       /auth/check/           Checks if a token is validreturn ["status": BOOLEAN  ]
+# POST       /auth/app              Create a new App (Registration)return [app]
 
-# POST       /auth/logout/          Terminates the sessionreturn [loged out sussesfully ]
+# Validate user
+# Throw 409 , if app exists
+# Generate app secret
+# Create app in database
+# Return new app with app_id
 
 # POST       /auth/app              Create a new App (Registration)return [app  ]
 # Validate user
@@ -149,9 +153,9 @@ def destroy_user(
 # Save hashed token to database
 # Return token
 
-# PATCH      /auth/app/{app_id}/    Update Existing App Inforeturn [app ]
+# PATCH      /auth/app/{app_id}/    Update Existing App Inforeturn [app]
 
-# DELETE     /auth/app/{app_id}/    Soft Delete App by IDreturn [app ]
+# DELETE     /auth/app/{app_id}/    Soft Delete App by IDreturn [app]
 
 # GET        /log/                  Gets the logs updated till then[List[log]] AUTHENTICATED
 
