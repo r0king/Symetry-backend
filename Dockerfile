@@ -2,10 +2,10 @@ FROM python:3.9.2-slim
 
 COPY ./app /app
 
-COPY ./test.py test.py
-
 COPY  ./requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt
 
-CMD [ "python", "test.py" ]
+WORKDIR /app
+
+CMD [ "uvicorn", "app.main:app", "--reload", "--port", "80", "--host", "0.0.0.0"]
