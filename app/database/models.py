@@ -86,5 +86,4 @@ class App(Base):
     secret = Column(String, nullable=False)
     name = Column(String, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
-
     user = relationship("User")

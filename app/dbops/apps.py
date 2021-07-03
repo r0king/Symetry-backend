@@ -21,6 +21,10 @@ def get_app_by_id(database: Session, app_id: str):
     """Get App By ID"""
     return database.query(App).filter_by(id=app_id).first()
 
+def get_app_by_name(database: Session, name: str):
+    """Get App By name"""
+    return database.query(App).filter_by(name=name).first()
+
 
 def delete_app(database: Session, app_id: str):
     """To delete an app entry"""

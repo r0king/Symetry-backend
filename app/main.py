@@ -1,4 +1,5 @@
 # endpoints are updated in the readme
+from app.schemas.tokens import TokenCreate
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.params import Depends
@@ -7,10 +8,12 @@ from app.dependancies import get_current_user, get_db
 from app.dbops.users import delete_user, update_user
 from app.logic.users import create_user_endpoint
 from app.logic.common import is_same_user_or_throw
-from app.database.models import Session
+from app.database.models import App, Session
 from app.exceptions import IntendedException
 from app.database import models
 from app.database.database import set_up_database
+import app.schemas.apps as appSchemas
+from app.logic.apps import app_login_endpoint, check_token_id_exists, create_app_endpoint
 
 models.Base.metadata.create_all(bind=set_up_database())
 
@@ -127,7 +130,7 @@ def destroy_user(
     is_same_user_or_throw(current_user, user_id)
     return delete_user(database, user_id)
 
-# POST       /auth/login/           Return tokenID by submitting credentialsreturn ["token_id": STRING  ]
+# POST       /auth/login/           Return tokenID by submitting credentials return ["token_id": STRING  ]
 
 # POST       /auth/validate/        Creates a session by submitting tokenIDreturn [{"token": STRING, "type": STRING}  ]
 
@@ -138,15 +141,39 @@ def destroy_user(
 # POST       /auth/app              Create a new App (Registration)return [app  ]
 # Validate user
 # Throw 409 , if app exists
-# Generate app secret
 # Create app in database
 # Return new app with app_id
 
-# POST       /auth/app/{app_id}/login/       Creates a session by submitting credentialsreturn ["token": STRING  ]
-# Throw 404, if app-id or uer_id doesn't exist
+@app.post("/auth/app", response_model=appSchemas.App)
+def create_app(app: appSchemas.CreateApp, database: Session = Depends(get_db)):
+    """
+
+    POST /auth/app
+    Create a new third party app
+
+    """
+
+    return create_app_endpoint(database, app)
+
+# POST       /auth/app/{app_id}/login/       Creates a session by submitting credentials return ["token": STRING  ]
+# Throw 404, if app-id or user_id doesn't exist
 # Validate token_id
 # create token eg:['user_id+app_id+randomvalue',token_id,'app_secret+timestamp']
+# Hash and store token
 # Return token
+
+@app.post(" /auth/app/{app_id}/login", response_model=App)
+def create_app_session(token_id :int, token: TokenCreate, database: Session = Depends(get_db)):
+    """
+
+    GET /auth/app/:app_id/login
+    validate and return token
+
+    """
+    check_token_id_exists(database, token) #check if a token with same app_id and user_id exists
+
+    return app_login_endpoint(database, token)   #return token
+
 
 # PATCH      /auth/app/{app_id}/    Update Existing App Inforeturn [app]
 
