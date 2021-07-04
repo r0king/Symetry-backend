@@ -1,5 +1,4 @@
 # endpoints are updated in the readme
-from app.schemas.tokens import TokenCreate
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.params import Depends

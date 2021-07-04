@@ -1,11 +1,11 @@
 from datetime import timedelta
 from app.dbops.common import hash_string
 from app.schemas.tokens import TokenCreate
-from app.dbops.tokens import create_token, get_token_by_id, list_tokens
+from app.dbops.tokens import create_token, get_token_by_id
 from app.exceptions import IntendedException
 from app.dbops.apps import create_app, get_app_by_id, get_app_by_name
 from app.schemas.apps import App
-from jose import JWTError, jwt
+from jose import jwt
 
 def create_app_endpoint(database, app: App):
     """
@@ -45,7 +45,7 @@ def app_login_endpoint(database, token:TokenCreate):
         tokenrow = create_token(database,token)
         app = get_app_by_id(database,token.app_id)
     except:
-        raise IntendedException('Internal Server Error',status_code=500)
+        raise IntendedException('Internal Server Error',status_code=500) 
 
     #set time to expire        
     tokenrow.timestamp += timedelta(minutes=120)
