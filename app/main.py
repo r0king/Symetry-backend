@@ -157,21 +157,20 @@ def create_app(app: appSchemas.CreateApp, database: Session = Depends(get_db)):
 
 # POST       /auth/app/{app_id}/login/       Creates a session by submitting credentials return ["token": STRING  ]
 # Throw 404, if app-id or user_id doesn't exist
-# Validate token_id
 # create token eg:['user_id+app_id+randomvalue',token_id,'app_secret+timestamp']
 # Hash and store token
 # Return token
 
 @app.post(" /auth/app/{app_id}/login", response_model=App)
-def create_app_session(token_id :int, token: TokenCreate, database: Session = Depends(get_db)):
+def create_app_session(token_id :int, database: Session = Depends(get_db)):
     """
 
     GET /auth/app/:app_id/login
     validate and return token
 
-    """
-    check_token_id_exists(database, token) #check if a token with same app_id and user_id exists
-
+    # """
+    # check_token_id_exists(database, token) #check if a token with same app_id and user_id exists (must be done in token_id return)
+    token = check_token_id_exists(database, token_id)
     return app_login_endpoint(database, token)   #return token
 
 
