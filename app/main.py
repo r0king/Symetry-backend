@@ -128,8 +128,14 @@ def destroy_user(
     return delete_user(database, user_id)
 
 # POST       /auth/login/           Return tokenID by submitting credentialsreturn ["token_id": STRING  ]
+#Enter credentials
+#Throw error 400, if login credentials are invalid.
+#Return TokenID
 
-# POST       /auth/validate/        Creates a session by submitting tokenIDreturn [{"token": STRING, "type": STRING}  ]
+# POST       /auth/validate/        Creates a session by submitting tokenID return [{"token": STRING, "type": STRING}  ]
+#submit tokenID
+#Throw 409 error, if session expires. 
+#return Token and Type
 
 # POST       /auth/check/           Checks if a token is validreturn ["status": BOOLEAN  ]
 
