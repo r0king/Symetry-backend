@@ -41,19 +41,3 @@ def get_current_user(database: Session = Depends(get_db), token: str = Depends(o
 
     return User(**session.user.__dict__)
 
-def get_current_app(database: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    """
-    :return: schemas.App
-    """
-    credentials_exception = HTTPException(
-        status_code=401,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-    session = get_session_by_token(database, token)
-
-    if session is None:
-        raise credentials_exception
-
-    return App(**session.app.__dict__)
