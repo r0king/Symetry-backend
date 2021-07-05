@@ -3,10 +3,12 @@ from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.params import Depends
 from app.schemas.users import CreateUser, User, UserUpdate
-from app.dependancies import get_current_user, get_db
+from app.schemas.apps import CreateApp, App, UpdateApp
+from app.dependancies import get_current_user, get_db, get_current_app
 from app.dbops.users import delete_user, update_user
+from app.dbops.apps import update_app, delete_app
 from app.logic.users import create_user_endpoint
-from app.logic.common import is_same_user_or_throw
+from app.logic.common import is_same_user_or_throw, is_same_app_or_throw
 from app.database.models import Session
 from app.exceptions import IntendedException
 from app.database import models
@@ -131,9 +133,11 @@ def destroy_user(
 
 # POST       /auth/validate/        Creates a session by submitting tokenIDreturn [{"token": STRING, "type": STRING}  ]
 
+
 # POST       /auth/check/           Checks if a token is validreturn ["status": BOOLEAN  ]
 
 # POST       /auth/logout/          Terminates the sessionreturn [loged out sussesfully ]
+# Delete session
 
 # POST       /auth/app              Create a new App (Registration)return [app  ]
 # Validate user
@@ -149,8 +153,30 @@ def destroy_user(
 # Return token
 
 # PATCH      /auth/app/{app_id}/    Update Existing App Inforeturn [app]
+# Validate
+# Throw 403, if user has doesn't have permissions
+# Throw 404, if app with app_id doesn't exist in database
+# Update App name in database
+# Return updated user
+
+@app.patch("/auth/app/{app_id}", response_model=App)
+def patch_app(app_id: int, updated_info: UpdateApp, database: Session = Depends(get_db), current_app: App = Depends(get_current_app)):
+    is_same_app_or_throw(current_app, app_id)
+    return update_app(database, app_id, updated_info)
+
 
 # DELETE     /auth/app/{app_id}/    Soft Delete App by IDreturn [app]
+# Validate
+# Throw 403, if user has doesn't have permissions
+# Throw 404, if app with app_id doesn't exist in database
+# Soft delete app
+# Return deleted app
+
+@app.delete("/auth/app/{app_id}", response_model=App)
+def destroy_app(app_id: int, database: Session = Depends(get_db), current_app: App = Depends(get_current_app)):
+    is_same_app_or_throw(current_app, app_id)
+    return delete_app(database, app_id)
+
 
 # GET        /log/                  Gets the logs updated till then[List[log]] AUTHENTICATED
 
