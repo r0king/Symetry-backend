@@ -139,7 +139,13 @@ def destroy_user(
 
 # POST       /auth/check/           Checks if a token is validreturn ["status": BOOLEAN  ]
 
+# Throw 401 , if token is invalid.
+#return status true or false
+
 # POST       /auth/logout/          Terminates the sessionreturn [loged out sussesfully ]
+
+# delete session 
+# return logged out successfully.
 
 # POST       /auth/app              Create a new App (Registration)return [app  ]
 # Validate user
