@@ -13,10 +13,11 @@ from app.exceptions import IntendedException
 from app.database import models
 from app.database.database import set_up_database
 import app.schemas.apps as appSchemas
-from app.logic.apps import app_login_endpoint, check_app, check_app_exists, create_app_endpoint
+from app.logic.apps import app_login_endpoint, check_app, check_token, create_app_endpoint
 models.Base.metadata.create_all(bind=set_up_database())
 
 app = FastAPI()
+
 
 @app.exception_handler(IntendedException)
 def handle_intended_exception(_, exc):
@@ -26,6 +27,7 @@ def handle_intended_exception(_, exc):
     raise HTTPException(detail=exc.message, status_code=exc.status_code)
 
 # GET        /                      Get root information about the APIreturn [details ]
+
 
 @app.get('/')
 def root():
@@ -46,6 +48,7 @@ def root():
 # Retrieve row from database
 # Return user
 
+
 @app.get("/auth/me/", response_model=User)
 def get_logged_in_user(user: User = Depends(get_current_user)):
     """
@@ -60,6 +63,7 @@ def get_logged_in_user(user: User = Depends(get_current_user)):
 # Throw if email or username is duplicate
 # Create user in database
 # Return new user
+
 
 @app.post("/auth/user/", response_model=User)
 def create_user(user: CreateUser, database: Session = Depends(get_db)):
@@ -76,6 +80,7 @@ def create_user(user: CreateUser, database: Session = Depends(get_db)):
 # Throw 404, if user with user_id doesn't exist in database
 # Retrieve row from database
 # Return user
+
 
 @app.get("/auth/user/{user_id}", response_model=User)
 def retreive_user(user_id: int, current_user: User = Depends(get_current_user)):
@@ -116,6 +121,7 @@ def patch_user(
 # Soft delete user
 # Return deleted user
 
+
 @app.delete("/auth/user/{user_id}", response_model=User)
 def destroy_user(
     user_id: int,
@@ -142,25 +148,26 @@ def destroy_user(
 # Authorise user
 # Throw 409 , if same app exists for user
 # Create and store time
-# Create app in database 
+# Create app in database
 # Return new app with app_id
+
 
 @app.post("/app", response_model=appSchemas.App)
 def create_app(
-    app_name:str,
+    app_name: str,
     database: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)        
-    ):
+    current_user: User = Depends(get_current_user)
+):
     """
 
      POST /app
      Create a new third party app
 
      """
-    
+
     # checks user has app with same name
-    check_app(database,app_name,current_user.id)        
-    return create_app_endpoint(database, app, current_user)
+    check_app(database, app_name, current_user.id)
+    return create_app_endpoint(database, app_name=app_name,  user_id=current_user.id)
 
 # POST       /app/{app_id}/login/       Creates a session by submitting credentials return ["token": STRING  ]
 # Validate app_id
@@ -168,20 +175,24 @@ def create_app(
 # create a token in database(table)
 # Return token_id
 
-@app.post("/app/{app_id}/login", response_model=App)
+
+@app.post(" /app/{app_id}/login", response_model=App)
 def create_app_session(
-    app_id :int,
-    database: Session = Depends(get_db),    
-    current_user: User = Depends(get_current_user) ):
+    app_id: int,
+    database: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """
 
-    GET /app/:app_id/login
+    POST /app/:app_id/login
     validate and return token
 
     """
-    check_app_exists(database, app_id, current_user.id) #check if a token with same app_id and user_id exists
-    
-    return app_login_endpoint(database, app_id, current_user.id)   #create token return id
+    # check if the user is the owner of app ( search by app_id )
+    app_name = check_token(database, app_id, current_user.id)
+
+    # return token id
+    return app_login_endpoint(database, app_name=app_name, app_id=app_id, user_id=current_user.id)
 
 
 # PATCH      /auth/app/{app_id}/    Update Existing App Inforeturn [app]
