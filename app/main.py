@@ -1,5 +1,3 @@
-# endpoints are updated in the readme
-from app.schemas.tokens import TokenCreate
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.params import Depends
@@ -137,9 +135,15 @@ def destroy_user(
 
 # POST       /auth/login/           Return tokenID by submitting credentials return ["token_id": STRING  ]
 
-# POST       /auth/validate/        Creates a session by submitting tokenIDreturn [{"token": STRING, "type": STRING}  ]
+# POST       /auth/validate/        Creates a session by submitting tokenID return [{"token": STRING, "type": STRING}  ]
+#submit tokenID
+#Throw 409 error, if session expires. 
+#return Token and Type
 
 # POST       /auth/check/           Checks if a token is validreturn ["status": BOOLEAN  ]
+
+# Throw 401 , if token is invalid.
+#return status true or false
 
 # POST       /auth/logout/          Terminates the sessionreturn [loged out sussesfully ]
 
