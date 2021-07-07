@@ -78,7 +78,7 @@ def create_user(user: CreateUser, database: Session = Depends(get_db)):
 # Retrieve row from database
 # Return user
 
-@app.get("/user/{user_id}", response_model=User)
+@app.get("/user/{user_id}/", response_model=User)
 def retreive_user(user_id: int, current_user: User = Depends(get_current_user)):
     """
     GET /auth/user/:user_id
@@ -96,7 +96,7 @@ def retreive_user(user_id: int, current_user: User = Depends(get_current_user)):
 # Update User's data in database
 # Return updated user
 
-@app.patch("/user/{user_id}", response_model=User)
+@app.patch("/user/{user_id}/", response_model=User)
 def patch_user(
     user_id: int,
     updated_data: UserUpdate,
@@ -117,7 +117,7 @@ def patch_user(
 # Soft delete user
 # Return deleted user
 
-@app.delete("/user/{user_id}", response_model=User)
+@app.delete("/user/{user_id}/", response_model=User)
 def destroy_user(
     user_id: int,
     database: Session = Depends(get_db),
@@ -171,7 +171,7 @@ def destroy_user(
 # Update App name in database
 # Return updated user
 
-@app.patch("/app/{app_id}", response_model=App)
+@app.patch("/app/{app_id}/", response_model=App)
 def patch_app(
     app_id: int,
     updated_info: UpdateApp,
