@@ -9,7 +9,7 @@ from app.dbops.users import delete_user, update_user
 from app.dbops.apps import update_app, delete_app
 from app.logic.users import create_user_endpoint
 from app.logic.common import is_same_user_or_throw
-from app.logic.apps import check_token
+from app.logic.apps import is_same_app_or_throw
 from app.database.models import Session
 from app.exceptions import IntendedException
 from app.database import models
@@ -160,8 +160,16 @@ def destroy_user(
 # Return updated user
 
 @app.patch("/auth/app/{app_id}", response_model=App)
-def patch_app(app_id: int, updated_info: UpdateApp, database: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    check_token(database, app_id, current_user.id)
+def patch_app(
+    app_id: int,
+    updated_info: UpdateApp,
+    database: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    PATCH /app/{app_id}/
+    """
+    is_same_app_or_throw(database, app_id, current_user)
     return update_app(database, app_id, updated_info)
 
 
@@ -171,9 +179,16 @@ def patch_app(app_id: int, updated_info: UpdateApp, database: Session = Depends(
 # Soft delete app
 # Return deleted app
 
-@app.delete("/auth/app/{app_id}", response_model=App)
-def destroy_app(app_id: int, database: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    check_token(database, app_id, current_user.id)
+@app.delete("/app/{app_id}/", status_code=204)
+def destroy_app(
+    app_id: int,
+    database: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    DELETE /app/{app_id}/
+    """
+    is_same_app_or_throw(database, app_id, current_user.id)
     delete_app(database, app_id)
 
 
