@@ -3,10 +3,13 @@ from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.params import Depends
 from app.schemas.users import CreateUser, User, UserUpdate
+from app.schemas.apps import App, UpdateApp
 from app.dependancies import get_current_user, get_db
 from app.dbops.users import delete_user, update_user
+from app.dbops.apps import update_app, delete_app
 from app.logic.users import create_user_endpoint
 from app.logic.common import is_same_user_or_throw
+from app.logic.apps import is_same_app_or_throw
 from app.database.models import Session
 from app.exceptions import IntendedException
 from app.database import models
@@ -44,7 +47,7 @@ def root():
 # Retrieve row from database
 # Return user
 
-@app.get("/auth/me/", response_model=User)
+@app.get("/me/", response_model=User)
 def get_logged_in_user(user: User = Depends(get_current_user)):
     """
     GET /auth/me/
@@ -59,7 +62,7 @@ def get_logged_in_user(user: User = Depends(get_current_user)):
 # Create user in database
 # Return new user
 
-@app.post("/auth/user/", response_model=User)
+@app.post("/user/", response_model=User)
 def create_user(user: CreateUser, database: Session = Depends(get_db)):
     """
     POST /auth/user/
@@ -75,7 +78,7 @@ def create_user(user: CreateUser, database: Session = Depends(get_db)):
 # Retrieve row from database
 # Return user
 
-@app.get("/auth/user/{user_id}", response_model=User)
+@app.get("/user/{user_id}", response_model=User)
 def retreive_user(user_id: int, current_user: User = Depends(get_current_user)):
     """
     GET /auth/user/:user_id
@@ -93,7 +96,7 @@ def retreive_user(user_id: int, current_user: User = Depends(get_current_user)):
 # Update User's data in database
 # Return updated user
 
-@app.patch("/auth/user/{user_id}", response_model=User)
+@app.patch("/user/{user_id}", response_model=User)
 def patch_user(
     user_id: int,
     updated_data: UserUpdate,
@@ -114,7 +117,7 @@ def patch_user(
 # Soft delete user
 # Return deleted user
 
-@app.delete("/auth/user/{user_id}", response_model=User)
+@app.delete("/user/{user_id}", response_model=User)
 def destroy_user(
     user_id: int,
     database: Session = Depends(get_db),
@@ -137,12 +140,14 @@ def destroy_user(
 #Throw 409 error, if session expires. 
 #return Token and Type
 
+
 # POST       /auth/check/           Checks if a token is validreturn ["status": BOOLEAN  ]
 
 # Throw 401 , if token is invalid.
 #return status true or false
 
 # POST       /auth/logout/          Terminates the sessionreturn [loged out sussesfully ]
+# Delete session
 
 # delete session 
 # return logged out successfully.
@@ -161,8 +166,45 @@ def destroy_user(
 # Return token
 
 # PATCH      /auth/app/{app_id}/    Update Existing App Inforeturn [app]
+# Validate
+# Throw 403, if user has doesn't have permission
+# Update App name in database
+# Return updated user
+
+@app.patch("/app/{app_id}", response_model=App)
+def patch_app(
+    app_id: int,
+    updated_info: UpdateApp,
+    database: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    PATCH /app/{app_id}/
+    Update App
+    """
+    is_same_app_or_throw(database, app_id, current_user)
+    return update_app(database, app_id, updated_info)
+
 
 # DELETE     /auth/app/{app_id}/    Soft Delete App by IDreturn [app]
+# Validate
+# Throw 403, if user has doesn't have permissions
+# Soft delete app
+# Return deleted app
+
+@app.delete("/app/{app_id}/", status_code=204)
+def destroy_app(
+    app_id: int,
+    database: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    DELETE /app/{app_id}/
+    Delete App
+    """
+    is_same_app_or_throw(database, app_id, current_user.id)
+    delete_app(database, app_id)
+
 
 # GET        /log/                  Gets the logs updated till then[List[log]] AUTHENTICATED
 
