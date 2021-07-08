@@ -10,7 +10,7 @@ def hash_string(string):
     """
     Hash string with sha256
     """
-    return sha256(string).hexdigest()
+    return sha256(string.encode("utf-8")).hexdigest()
 
 
 def commit_changes_to_object(database: Session, obj: Base):

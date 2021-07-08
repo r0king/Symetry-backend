@@ -1,7 +1,7 @@
 # endpoints are updated in the readme
 from fastapi import FastAPI
-from fastapi.exceptions import HTTPException
 from fastapi.params import Depends
+from starlette.responses import PlainTextResponse
 from app.schemas.tokens import TokenCreate
 from app.dbops.tokens import create_token
 from app.schemas.users import CreateUser, User, UserUpdate
@@ -28,7 +28,7 @@ def handle_intended_exception(_, exc):
     """
     Handle all intended exceptions
     """
-    raise HTTPException(detail=exc.message, status_code=exc.status_code)
+    return PlainTextResponse(exc.message, status_code=exc.status_code)
 
 # GET        /                      Get root information about the APIreturn [details ]
 

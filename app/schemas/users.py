@@ -19,7 +19,6 @@ class UserBase(BaseModel):
     name: str
     email: EmailStr
     contact: contact_field
-    role: Roles
 
 
 class CreateUser(UserBase):
@@ -47,3 +46,7 @@ class User(UserBase):
     """
     id: int
     is_active: bool
+
+    class Config:
+        """Enable ORM mode"""
+        orm_mode = True

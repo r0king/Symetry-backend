@@ -1,9 +1,10 @@
 """
 App logic
 """
+import sqlalchemy
 from app.exceptions import IntendedException
-from app.dbops.apps import get_app_by_id
-
+from app.dbops.apps import get_app_by_id, create_app
+from app.schemas.apps import CreateApp
 
 def is_same_app_or_throw(database, app_id, current_user):
     """
@@ -12,10 +13,6 @@ def is_same_app_or_throw(database, app_id, current_user):
     app = get_app_by_id(database, app_id)
     if app.user_id != current_user.id:
         raise IntendedException("You don\'t have the appropriate timings", 403)
-import sqlalchemy
-from app.exceptions import IntendedException
-from app.dbops.apps import create_app
-from app.schemas.apps import CreateApp
 
 def create_app_endpoint(database, app: CreateApp, current_user):
     """

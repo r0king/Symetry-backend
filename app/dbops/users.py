@@ -2,7 +2,6 @@
 CRUD Operations on users table
 """
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
 from app.dbops.common import commit_changes_to_object, hash_string, list_table
 from app.database import models
 from app.schemas.users import CreateUser, UserUpdate

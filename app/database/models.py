@@ -26,7 +26,6 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     contact = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
-    role = Column(Enum(Roles), default=Roles.USER, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
 
 
