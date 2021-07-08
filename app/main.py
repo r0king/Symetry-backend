@@ -1,16 +1,17 @@
 # endpoints are updated in the readme
+import uuid
 from fastapi import FastAPI
 from fastapi.params import Depends
-from starlette.responses import PlainTextResponse
+from starlette.responses import PlainTextResponse, Response
 from app.schemas.tokens import TokenCreate
 from app.dbops.tokens import create_token
-from app.schemas.users import CreateUser, User, UserUpdate
+from app.schemas.users import CreateUser, User, UserLogin, UserUpdate
 from app.schemas.apps import App, UpdateApp
-from app.dependancies import get_current_user, get_db, oauth2_scheme
-from app.dbops.users import delete_user, update_user
+from app.dependancies import LoginForm, get_current_user, get_db, oauth2_scheme
+from app.dbops.users import delete_user, get_user_by_email_or_username, update_user, get_user
 from app.dbops.apps import update_app, delete_app
-from app.dbops.sessions import delete_session
-from app.logic.users import create_user_endpoint
+from app.dbops.sessions import create_session, delete_session
+from app.logic.users import create_user_endpoint, verify_user_credentials
 from app.logic.common import is_same_user_or_throw
 from app.logic.apps import is_same_app_or_throw
 from app.logic.tokens import verify_token
@@ -21,6 +22,8 @@ from app.database.database import set_up_database
 from app.schemas.apps import CreateApp
 from app.logic.apps import create_app_endpoint
 from app.schemas.tokens import VerifyToken
+from app.schemas.sessions import SessionCreate
+from app.logic.sessions import make_session
 
 models.Base.metadata.create_all(bind=set_up_database())
 
@@ -49,10 +52,6 @@ def root():
         "team": "Monsoon '21 Batch"
     }
 
-# GET        /auth/me/            Get Current User Info[user] AUTHENTICATED
-
-# Retrieve row from database
-# Return user
 
 @app.get("/me/", response_model=User)
 def get_logged_in_user(user: User = Depends(get_current_user)):
@@ -62,12 +61,6 @@ def get_logged_in_user(user: User = Depends(get_current_user)):
     """
     return user
 
-# POST       /auth/user/            Create a new User (Registration)[user ]
-
-# Validate
-# Throw if email or username is duplicate
-# Create user in database
-# Return new user
 
 @app.post("/user/", response_model=User)
 def create_user(user: CreateUser, database: Session = Depends(get_db)):
@@ -78,12 +71,6 @@ def create_user(user: CreateUser, database: Session = Depends(get_db)):
     """
     return create_user_endpoint(database, user)
 
-# GET       /auth/user/{user_id}/       Get User By ID[user] AUTHENTICATED
-
-# Throw 403, if user has doesn't have permissions
-# Throw 404, if user with user_id doesn't exist in database
-# Retrieve row from database
-# Return user
 
 @app.get("/user/{user_id}/", response_model=User)
 def retreive_user(user_id: int, current_user: User = Depends(get_current_user)):
@@ -94,14 +81,6 @@ def retreive_user(user_id: int, current_user: User = Depends(get_current_user)):
     is_same_user_or_throw(current_user, user_id)
     return current_user
 
-
-# PATCH      /auth/user/{user_id}/  Update Existing User Info[user] AUTHENTICATED
-
-# Validate
-# Throw 403, if user has doesn't have permissions
-# Throw 404, if user with user_id doesn't exist in database
-# Update User's data in database
-# Return updated user
 
 @app.patch("/user/{user_id}/", response_model=User)
 def patch_user(
@@ -117,12 +96,6 @@ def patch_user(
     is_same_user_or_throw(current_user, user_id)
     return update_user(database, user_id, updated_data)
 
-# DELETE     /auth/user/{user_id}/  Soft Delete User by ID[user] AUTHENTICATED
-
-# Throw 403, if user has doesn't have permissions
-# Throw 404, if user with user_id doesn't exist in database
-# Soft delete user
-# Return deleted user
 
 @app.delete("/user/{user_id}/", response_model=User)
 def destroy_user(
@@ -137,15 +110,30 @@ def destroy_user(
     is_same_user_or_throw(current_user, user_id)
     return delete_user(database, user_id)
 
-# POST       /auth/login/           Return tokenID by submitting credentialsreturn ["token_id": STRING  ]
-#Enter credentials
-#Throw error 400, if login credentials are invalid.
-#Return TokenID
 
-# POST       /auth/validate/        Creates a session by submitting tokenID return [{"token": STRING, "type": STRING}  ]
-#submit tokenID
-#Throw 409 error, if session expires. 
-#return Token and Type
+@app.post("/auth/login/")
+def login_to_symetry(
+    response: Response,
+    credentials: LoginForm = Depends(),
+    database: Session = Depends(get_db)
+):
+    """
+    Login to symetry
+    POST /auth/login/
+    """
+    this_user = get_user_by_email_or_username(database, username=credentials.username)
+    if this_user and verify_user_credentials(this_user, credentials.password):
+        new_session = SessionCreate(
+            user_id=this_user.id,
+            token=make_session(this_user),
+            save_session=True
+        )
+        token_raw = new_session.token
+        create_session(database, new_session)
+        response.set_cookie(key="session", value=token_raw)
+        # For swagger/openapi
+        return {"access_token": token_raw, "token_type": "bearer"}
+    raise IntendedException("Unauthenticated", 401)
 
 
 @app.post("/token/check/")
@@ -156,8 +144,7 @@ def check(token_data: VerifyToken, database: Session = Depends(get_db)):
     """
     return verify_token(database, token_data)
 
-# POST       /auth/logout/          Terminates the sessionreturn [loged out sussesfully ]
-# Delete session
+
 @app.post("/auth/logout/", status_code=204)
 def logout(
     database: Session = Depends(get_db),
@@ -169,14 +156,6 @@ def logout(
     if delete_session(database, token=token) is None:
         raise IntendedException("Session not found", 400)
 
-# delete session 
-# return logged out successfully.
-
-# POST       /auth/app              Create a new App (Registration)return [app  ]
-# Validate user
-# Throw 409 , if app exists
-# Create app in database
-# Return new app with app_id
 
 @app.post("/app/", response_model=App)
 def create_app(
@@ -190,15 +169,10 @@ def create_app(
     """
     return create_app_endpoint(database, third_party_app, current_user)
 
-# POST       /auth/app/{app_id}/login/       Creates a session by submitting credentials return ["token": STRING  ]
-# Throw 404, if app-id or user_id doesn't exist
-# create token eg:['user_id+app_id+randomvalue',token_id,'app_secret+timestamp']
-# Hash and store token
-# Return token
 
 @app.post("/app/{app_id}/login/")
 def login_to_app(
-    app_id: int,
+    app_id: uuid.UUID,
     database: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
@@ -212,15 +186,10 @@ def login_to_app(
         token_data=TokenCreate(user_id=current_user.id, app_id=app_id)
     ).id
 
-# PATCH      /auth/app/{app_id}/    Update Existing App Inforeturn [app]
-# Validate
-# Throw 403, if user has doesn't have permission
-# Update App name in database
-# Return updated user
 
 @app.patch("/app/{app_id}/", response_model=App)
 def patch_app(
-    app_id: int,
+    app_id: uuid.UUID,
     updated_info: UpdateApp,
     database: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -233,15 +202,9 @@ def patch_app(
     return update_app(database, app_id, updated_info)
 
 
-# DELETE     /auth/app/{app_id}/    Soft Delete App by IDreturn [app]
-# Validate
-# Throw 403, if user has doesn't have permissions
-# Soft delete app
-# Return deleted app
-
 @app.delete("/app/{app_id}/", status_code=204)
 def destroy_app(
-    app_id: int,
+    app_id: uuid.UUID,
     database: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):

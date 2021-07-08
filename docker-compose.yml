@@ -22,3 +22,14 @@ services:
             - "3000:80"
         volumes: 
             - "./app:/app/app"
+    
+    pg-admin:
+        container_name: "pg-admin-symetry"
+        image: dpage/pgadmin4
+        ports:
+            - "9000:80"
+        environment:
+            PGADMIN_DEFAULT_EMAIL: "admin@symetry.com"
+            PGADMIN_DEFAULT_PASSWORD: "123456"
+
+    

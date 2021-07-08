@@ -1,6 +1,7 @@
 """
 Main dependancies
 """
+from fastapi.param_functions import Form
 from fastapi.params import Depends
 from fastapi.exceptions import HTTPException
 from fastapi.security import OAuth2PasswordBearer
@@ -32,10 +33,17 @@ def get_current_user(database: Session = Depends(get_db), token: str = Depends(o
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-
+    #print(token)
     session = get_session_by_token(database, token)
 
     if session is None:
         raise credentials_exception
 
     return User(**session.user.__dict__)
+
+
+
+class LoginForm:
+    def __init__(self, username: str = Form(...), password: str = Form(...)):
+        self.username = username
+        self.password = password

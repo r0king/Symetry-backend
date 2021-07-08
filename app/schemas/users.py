@@ -5,7 +5,6 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic.networks import EmailStr
 from pydantic.types import constr
-from app.enums.roles import Roles
 
 
 contact_field = constr(max_length=10, min_length=10, regex="^[0-9]{10}$")
@@ -21,6 +20,14 @@ class UserBase(BaseModel):
     contact: contact_field
 
 
+class UserLogin(BaseModel):
+    """
+    Login Schema
+    """
+    username: str
+    password: str
+    save_session: bool = True
+
 class CreateUser(UserBase):
     """
     Create User Schema
@@ -35,7 +42,6 @@ class UserUpdate(BaseModel):
     username: Optional[str]
     email: Optional[EmailStr]
     contact: Optional[contact_field]
-    role: Optional[Roles]
     name: Optional[str]
     password: Optional[str]
 
