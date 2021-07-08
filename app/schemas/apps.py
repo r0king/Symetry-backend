@@ -8,7 +8,6 @@ from pydantic import BaseModel
 
 class CreateApp(BaseModel):
     """Create App Schema"""
-    user_id: int
     name: str
     secret: str
 
@@ -22,6 +21,7 @@ class UpdateApp(BaseModel):
 class App(CreateApp):
     """Read App Schema"""
     id: uuid.UUID
+    user_id: int
 
     class Config:
         """Enable ORM mode"""

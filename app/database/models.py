@@ -7,6 +7,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Column, String, Boolean, Integer, Enum, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import func
+from sqlalchemy.sql.schema import UniqueConstraint
 from app.database.config_db import Base
 from app.enums.roles import Roles
 
@@ -81,10 +82,11 @@ class App(Base):
     App ID, App Secret(Hashed), App Name, Email, Password(Hashed), User ID (many to many)
     """
     __tablename__ = "apps"
+    # Make user_id and app_name unique together
+    __table_args__ = tuple(UniqueConstraint("user_id", "name", name="user_app_name"))
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     secret = Column(String, nullable=False)
     name = Column(String, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
-
     user = relationship("User")

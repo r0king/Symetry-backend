@@ -2,6 +2,8 @@
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.params import Depends
+from app.schemas.tokens import TokenCreate
+from app.dbops.tokens import create_token
 from app.schemas.users import CreateUser, User, UserUpdate
 from app.schemas.apps import App, UpdateApp
 from app.dependancies import get_current_user, get_db
@@ -14,6 +16,8 @@ from app.database.models import Session
 from app.exceptions import IntendedException
 from app.database import models
 from app.database.database import set_up_database
+import app.schemas.apps as appSchemas
+from app.logic.apps import create_app_endpoint
 
 models.Base.metadata.create_all(bind=set_up_database())
 
@@ -155,15 +159,42 @@ def destroy_user(
 # POST       /auth/app              Create a new App (Registration)return [app  ]
 # Validate user
 # Throw 409 , if app exists
-# Generate app secret
 # Create app in database
 # Return new app with app_id
 
-# POST       /auth/app/{app_id}/login/       Creates a session by submitting credentialsreturn ["token": STRING  ]
-# Throw 404, if app-id or uer_id doesn't exist
-# Validate token_id
+@app.post("/app/", response_model=appSchemas.App)
+def create_app(
+    third_party_app: appSchemas.CreateApp,
+    database: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    POST /app/
+    Create a new third party app
+    """
+    return create_app_endpoint(database, third_party_app, current_user)
+
+# POST       /auth/app/{app_id}/login/       Creates a session by submitting credentials return ["token": STRING  ]
+# Throw 404, if app-id or user_id doesn't exist
 # create token eg:['user_id+app_id+randomvalue',token_id,'app_secret+timestamp']
+# Hash and store token
 # Return token
+
+@app.post("/app/{app_id}/login/")
+def login_to_app(
+    app_id: int,
+    database: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    """
+    Login to app
+    POST /app/:app_id/login/
+    RETURNS TOKEN_ID
+    """
+    return create_token(
+        database=database,
+        token_data=TokenCreate(user_id=current_user.id, app_id=app_id)
+    ).id
 
 # PATCH      /auth/app/{app_id}/    Update Existing App Inforeturn [app]
 # Validate
