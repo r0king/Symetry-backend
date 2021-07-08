@@ -27,7 +27,6 @@ def get_session_by_token(database: Session, token: str):
     """
     Get session info by token
     """
-    #print(hash_string(token))
     return database.query(SessionTable).filter_by(token=hash_string(token)).first()
 
 
@@ -49,9 +48,7 @@ def create_session(database: Session, session: SessionCreate):
     """
     Create Session
     """
-    print(session.token, "UNHASHED")
     session.token = hash_string(session.token)
-    print(session.token, "HASHED")
     user_session = SessionTable(**session.dict())
     commit_changes_to_object(database, user_session)
 

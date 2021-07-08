@@ -1,6 +1,7 @@
 """
 Main dependancies
 """
+from typing import Optional
 from fastapi.param_functions import Form
 from fastapi.params import Depends
 from fastapi.exceptions import HTTPException
@@ -33,7 +34,6 @@ def get_current_user(database: Session = Depends(get_db), token: str = Depends(o
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    #print(token)
     session = get_session_by_token(database, token)
 
     if session is None:
@@ -44,6 +44,15 @@ def get_current_user(database: Session = Depends(get_db), token: str = Depends(o
 
 
 class LoginForm:
-    def __init__(self, username: str = Form(...), password: str = Form(...)):
+    """
+    The mapped form class for login
+    """
+    def __init__(
+        self,
+        username: str = Form(...),
+        password: str = Form(...),
+        save_session: Optional[bool] = Form(False)
+    ):
         self.username = username
         self.password = password
+        self.save_session = save_session

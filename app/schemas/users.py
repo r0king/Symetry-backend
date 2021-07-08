@@ -20,14 +20,6 @@ class UserBase(BaseModel):
     contact: contact_field
 
 
-class UserLogin(BaseModel):
-    """
-    Login Schema
-    """
-    username: str
-    password: str
-    save_session: bool = True
-
 class CreateUser(UserBase):
     """
     Create User Schema

@@ -1,20 +1,22 @@
-# endpoints are updated in the readme
+"""
+Entrypoint
+"""
 import uuid
 from fastapi import FastAPI
 from fastapi.params import Depends
 from starlette.responses import PlainTextResponse, Response
 from app.schemas.tokens import TokenCreate
-from app.dbops.tokens import create_token
-from app.schemas.users import CreateUser, User, UserLogin, UserUpdate
+from app.dbops.tokens import create_token, get_token_by_id
+from app.schemas.users import CreateUser, User, UserUpdate
 from app.schemas.apps import App, UpdateApp
 from app.dependancies import LoginForm, get_current_user, get_db, oauth2_scheme
-from app.dbops.users import delete_user, get_user_by_email_or_username, update_user, get_user
-from app.dbops.apps import update_app, delete_app
+from app.dbops.users import delete_user, get_user_by_email_or_username, update_user
+from app.dbops.apps import get_app_by_id, update_app, delete_app
 from app.dbops.sessions import create_session, delete_session
 from app.logic.users import create_user_endpoint, verify_user_credentials
 from app.logic.common import is_same_user_or_throw
 from app.logic.apps import is_same_app_or_throw
-from app.logic.tokens import verify_token
+from app.logic.tokens import make_token, verify_token
 from app.database.models import Session
 from app.exceptions import IntendedException
 from app.database import models
@@ -143,6 +145,20 @@ def check(token_data: VerifyToken, database: Session = Depends(get_db)):
     POST /token/check/
     """
     return verify_token(database, token_data)
+
+
+@app.post("/token/validate/")
+def create_token_from_id(
+    token_id: uuid.UUID,
+    database: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    token_data = get_token_by_id(database, token_id)
+    if token_data and token_data.user_id == current_user.id:
+        third_party_app = get_app_by_id(database, token_data.app_id)
+        return make_token(third_party_app, current_user.id, token_data.timestamp)
+
+    raise IntendedException("Invalid app token", 403)
 
 
 @app.post("/auth/logout/", status_code=204)
