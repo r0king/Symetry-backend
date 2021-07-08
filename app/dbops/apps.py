@@ -1,17 +1,17 @@
 """
 CRUD The Apps table
 """
-from app.exceptions import IntendedException
 from sqlalchemy.orm import Session
+from app.exceptions import IntendedException
 from app.database.models import App
 from app.schemas.apps import CreateApp, UpdateApp
 from .common import commit_changes_to_object, hash_string, list_table
 
 
-def create_app(database: Session, app: CreateApp):
+def create_app(database: Session, app: CreateApp, user_id: int):
     """To create a new entry"""
     app.secret = hash_string(app.secret)
-    database_app=App(**app.dict())
+    database_app=App(**app.dict(), user_id=user_id)
 
     commit_changes_to_object(database, database_app)
     return database_app

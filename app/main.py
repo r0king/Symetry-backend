@@ -2,17 +2,19 @@
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.params import Depends
+from app.schemas.tokens import TokenCreate
+from app.dbops.tokens import create_token
 from app.schemas.users import CreateUser, User, UserUpdate
 from app.dependancies import get_current_user, get_db
 from app.dbops.users import delete_user, update_user
 from app.logic.users import create_user_endpoint
 from app.logic.common import is_same_user_or_throw
-from app.database.models import App, Session
+from app.database.models import Session
 from app.exceptions import IntendedException
 from app.database import models
 from app.database.database import set_up_database
 import app.schemas.apps as appSchemas
-from app.logic.apps import app_login_endpoint, check_token_id_exists, create_app_endpoint
+from app.logic.apps import create_app_endpoint
 
 models.Base.metadata.create_all(bind=set_up_database())
 
@@ -143,16 +145,17 @@ def destroy_user(
 # Create app in database
 # Return new app with app_id
 
-@app.post("/auth/app", response_model=appSchemas.App)
-def create_app(app: appSchemas.CreateApp, database: Session = Depends(get_db)):
+@app.post("/app/", response_model=appSchemas.App)
+def create_app(
+    third_party_app: appSchemas.CreateApp,
+    database: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """
-
-    POST /auth/app
+    POST /app/
     Create a new third party app
-
     """
-
-    return create_app_endpoint(database, app)
+    return create_app_endpoint(database, third_party_app, current_user)
 
 # POST       /auth/app/{app_id}/login/       Creates a session by submitting credentials return ["token": STRING  ]
 # Throw 404, if app-id or user_id doesn't exist
@@ -160,18 +163,21 @@ def create_app(app: appSchemas.CreateApp, database: Session = Depends(get_db)):
 # Hash and store token
 # Return token
 
-@app.post(" /auth/app/{app_id}/login", response_model=App)
-def create_app_session(token_id :int, database: Session = Depends(get_db)):
+@app.post("/app/{app_id}/login/")
+def login_to_app(
+    app_id: int,
+    database: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
     """
-
-    GET /auth/app/:app_id/login
-    validate and return token
-
-    # """
-    # check_token_id_exists(database, token) #check if a token with same app_id and user_id exists (must be done in token_id return)
-    token = check_token_id_exists(database, token_id)
-    return app_login_endpoint(database, token)   #return token
-
+    Login to app
+    POST /app/:app_id/login/
+    RETURNS TOKEN_ID
+    """
+    return create_token(
+        database=database,
+        token_data=TokenCreate(user_id=current_user.id, app_id=app_id)
+    ).id
 
 # PATCH      /auth/app/{app_id}/    Update Existing App Inforeturn [app]
 
