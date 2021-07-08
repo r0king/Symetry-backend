@@ -27,13 +27,17 @@ def get_session_by_token(database: Session, token: str):
     """
     Get session info by token
     """
-    return database.query(SessionTable).filter_by(token=token)
+    return database.query(SessionTable).filter_by(token=hash_string(token)).first()
 
-def delete_session(database: Session, session_id: int):
+
+def delete_session(database: Session, session_id: int = None, token: str = None):
     """
     Delete Session
     """
-    session_in_db = get_session_by_id(database, session_id)
+    if session_id:
+        session_in_db = get_session_by_id(database, session_id)
+    else:
+        session_in_db = get_session_by_token(database, token)
     database.delete(session_in_db)
     database.commit()
 

@@ -6,6 +6,14 @@ import uuid
 from pydantic import BaseModel
 
 
+class VerifyToken(BaseModel):
+    """
+    Token Verify schema
+    """
+    app_id: uuid.UUID
+    token: str
+
+
 class TokenCreate(BaseModel):
     """
     Token Create schemas

@@ -6,11 +6,11 @@ from sqlalchemy.orm import Session
 from app.database.config_db import Base
 
 
-def hash_string(string):
+def hash_string(*kwargs):
     """
     Hash string with sha256
     """
-    return sha256(string.encode("utf-8")).hexdigest()
+    return sha256(("".join(kwargs)).encode("utf-8")).hexdigest()
 
 
 def commit_changes_to_object(database: Session, obj: Base):

@@ -6,18 +6,21 @@ from app.schemas.tokens import TokenCreate
 from app.dbops.tokens import create_token
 from app.schemas.users import CreateUser, User, UserUpdate
 from app.schemas.apps import App, UpdateApp
-from app.dependancies import get_current_user, get_db
+from app.dependancies import get_current_user, get_db, oauth2_scheme
 from app.dbops.users import delete_user, update_user
 from app.dbops.apps import update_app, delete_app
+from app.dbops.sessions import delete_session
 from app.logic.users import create_user_endpoint
 from app.logic.common import is_same_user_or_throw
 from app.logic.apps import is_same_app_or_throw
+from app.logic.tokens import verify_token
 from app.database.models import Session
 from app.exceptions import IntendedException
 from app.database import models
 from app.database.database import set_up_database
-import app.schemas.apps as appSchemas
+from app.schemas.apps import CreateApp
 from app.logic.apps import create_app_endpoint
+from app.schemas.tokens import VerifyToken
 
 models.Base.metadata.create_all(bind=set_up_database())
 
@@ -145,13 +148,26 @@ def destroy_user(
 #return Token and Type
 
 
-# POST       /auth/check/           Checks if a token is validreturn ["status": BOOLEAN  ]
-
-# Throw 401 , if token is invalid.
-#return status true or false
+@app.post("/token/check/")
+def check(token_data: VerifyToken, database: Session = Depends(get_db)):
+    """
+    To check if given token is valid
+    POST /token/check/
+    """
+    return verify_token(database, token_data)
 
 # POST       /auth/logout/          Terminates the sessionreturn [loged out sussesfully ]
 # Delete session
+@app.post("/auth/logout/", status_code=204)
+def logout(
+    database: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme)
+):
+    """
+    delete session and logout.
+    """
+    if delete_session(database, token=token) is None:
+        raise IntendedException("Session not found", 400)
 
 # delete session 
 # return logged out successfully.
@@ -162,9 +178,9 @@ def destroy_user(
 # Create app in database
 # Return new app with app_id
 
-@app.post("/app/", response_model=appSchemas.App)
+@app.post("/app/", response_model=App)
 def create_app(
-    third_party_app: appSchemas.CreateApp,
+    third_party_app: CreateApp,
     database: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
