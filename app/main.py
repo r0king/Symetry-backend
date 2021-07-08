@@ -2,15 +2,18 @@
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.params import Depends
-from app.schemas.users import CreateUser, User, UserUpdate
-from app.dependancies import get_current_user, get_db
+from app.dependancies import get_current_user, get_db, oauth2_scheme
 from app.dbops.users import delete_user, update_user
+from app.dbops.sessions import delete_session
 from app.logic.users import create_user_endpoint
 from app.logic.common import is_same_user_or_throw
+from app.logic.tokens import verify_token
 from app.database.models import Session
 from app.exceptions import IntendedException
 from app.database import models
 from app.database.database import set_up_database
+from app.schemas.users import CreateUser, User, UserUpdate
+from app.schemas.tokens import VerifyToken
 
 models.Base.metadata.create_all(bind=set_up_database())
 
@@ -131,26 +134,25 @@ def destroy_user(
 
 # POST       /auth/validate/        Creates a session by submitting tokenIDreturn [{"token": STRING, "type": STRING}  ]
 
-@app.post("/auth/check/", response_model=User)
-def check(app_id: int, token: str):
+@app.post("/token/check/")
+def check(token_data: VerifyToken, database: Session = Depends(get_db)):
     """
     To check if given token is valid
-    get attributes required to create a token from database (app_secret)
-    recreate the token
+    POST /token/check/
     """
-
-    recreated_token= hash_string(app_id+ user_id)
-    if(token == recreated_token):
-        return True
-    else:
-        return False
+    return verify_token(database, token_data)
 
 # POST       /auth/logout/          Terminates the sessionreturn [loged out sussesfully ]
-@app.post("/auth/logout/")
-def logout:
+@app.post("/user/logout/", status_code=204)
+def logout(
+    database: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme)
+):
     """
     delete session and logout.
     """
+    if delete_session(database, token=token) is None:
+        raise IntendedException("Session not found", 400)
 
 # delete session 
 # return logged out successfully.
