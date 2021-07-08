@@ -130,15 +130,38 @@ def destroy_user(
     is_same_user_or_throw(current_user, user_id)
     return delete_user(database, user_id)
 
-# POST       /auth/login/           Return tokenID by submitting credentialsreturn ["token_id": STRING  ]
+# POST       /user/login/           Return tokenID by submitting credentialsreturn ["token_id": STRING  ]
 #Enter credentials
 #Throw error 400, if login credentials are invalid.
 #Return TokenID
+@app.post("/user/login/", response_model=User)
+def login(email:str, password:str):
 
-# POST       /auth/validate/        Creates a session by submitting tokenID return [{"token": STRING, "type": STRING}  ]
+   """
+    Validate
+    get_user_by_email, and verify hashed input password is same as hashed password in db
+    create a token using user details and time
+    store the hashed token along with user_id to sessions table
+    return unhashed token to user
+   """ 
+   return Tokens
+
+
+
+
+
+
+# POST       /token/validate/        Creates a session by submitting tokenID return [{"token": STRING, "type": STRING}  ]
 #submit tokenID
 #Throw 409 error, if session expires. 
 #return Token and Type
+
+@app.post("/token/validate/", response_model=User)
+def validate(token_id: str):
+    if authenticaed user_id == "token row's user_id":
+        token: hash(app_id+app_secret+user_id)+user_id
+
+    returns token
 
 
 # POST       /auth/check/           Checks if a token is validreturn ["status": BOOLEAN  ]
