@@ -131,12 +131,26 @@ def destroy_user(
 
 # POST       /auth/validate/        Creates a session by submitting tokenIDreturn [{"token": STRING, "type": STRING}  ]
 
-# POST       /auth/check/           Checks if a token is validreturn ["status": BOOLEAN  ]
+@app.post("/auth/check/", response_model=User)
+def check(app_id: int, token: str):
+    """
+    To check if given token is valid
+    get attributes required to create a token from database (app_secret)
+    recreate the token
+    """
 
-# Throw 401 , if token is invalid.
-#return status true or false
+    recreated_token= hash_string(app_id+ user_id)
+    if(token == recreated_token):
+        return True
+    else:
+        return False
 
 # POST       /auth/logout/          Terminates the sessionreturn [loged out sussesfully ]
+@app.post("/auth/logout/")
+def logout:
+    """
+    delete session and logout.
+    """
 
 # delete session 
 # return logged out successfully.
