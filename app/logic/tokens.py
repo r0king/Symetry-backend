@@ -1,5 +1,5 @@
 """
-
+Token utils
 """
 import json
 import base64
@@ -13,6 +13,7 @@ def get_token_hash(third_party_app, user_id, timestamp):
     """
     Hash token according to a certain order
     """
+    print(third_party_app.id, third_party_app.secret, user_id, timestamp)
     return hash_string(third_party_app.id, third_party_app.secret, user_id, timestamp)
 
 
@@ -21,7 +22,7 @@ def make_token(third_party_app, user_id, timestamp: datetime):
     Create Token for apps
     """
     token_data = {
-        "token": get_token_hash(third_party_app, user_id, timestamp),
+        "token": get_token_hash(third_party_app, user_id, timestamp.timestamp()),
         "user_id": user_id,
         "timestamp": timestamp.timestamp()
     }

@@ -128,3 +128,20 @@ docker-compose up -d
 
 Tasks will be assigned as "Issues" Check the project board. 
 
+### Tokens
+
+Token contains 3 parts before encoding with base64(UTF-8)
+
+- hashed -> SHA256 Hash of app_id, app_secret, user_id and datetime
+- user_id
+- datetime
+
+This is stored as a json string and then encoded into base64(UTF-8)
+
+For verification from app's perspective
+
+- Decode the token using base64(UTF-8)
+- Load the json string and obtain user_id and datetime
+- Use your app_id and the SHA256 hash of your app_secret along with user_id and datetime from token and hash it with SHA256.
+- Compare the hashed part of the token with the hash you've obtained, for valid tokens it should match
+

@@ -5,7 +5,7 @@ import uuid
 from fastapi import FastAPI
 from fastapi.params import Depends
 from starlette.responses import PlainTextResponse, Response
-from app.schemas.tokens import TokenCreate
+from app.schemas.tokens import TokenCreate, TokenRequestSchema
 from app.dbops.tokens import create_token, get_token_by_id
 from app.schemas.users import CreateUser, User, UserUpdate
 from app.schemas.apps import App, UpdateApp
@@ -38,12 +38,10 @@ def handle_intended_exception(_, exc):
     """
     return PlainTextResponse(exc.message, status_code=exc.status_code)
 
-# GET        /                      Get root information about the APIreturn [details ]
 
 @app.get('/')
 def root():
     """
-    GET /
     Root page
     """
     return {
@@ -58,7 +56,6 @@ def root():
 @app.get("/me/", response_model=User)
 def get_logged_in_user(user: User = Depends(get_current_user)):
     """
-    GET /auth/me/
     Get Current User Info
     """
     return user
@@ -67,8 +64,6 @@ def get_logged_in_user(user: User = Depends(get_current_user)):
 @app.post("/user/", response_model=User)
 def create_user(user: CreateUser, database: Session = Depends(get_db)):
     """
-    POST /auth/user/
-
     Create a new user
     """
     return create_user_endpoint(database, user)
@@ -77,7 +72,6 @@ def create_user(user: CreateUser, database: Session = Depends(get_db)):
 @app.get("/user/{user_id}/", response_model=User)
 def retreive_user(user_id: int, current_user: User = Depends(get_current_user)):
     """
-    GET /auth/user/:user_id
     Retreive user info by id
     """
     is_same_user_or_throw(current_user, user_id)
@@ -92,7 +86,6 @@ def patch_user(
     current_user: User = Depends(get_current_user)
 ):
     """
-    PATCH /auth/user/:user_id
     Update user
     """
     is_same_user_or_throw(current_user, user_id)
@@ -106,7 +99,6 @@ def destroy_user(
     current_user: User = Depends(get_current_user),
 ):
     """
-    DELETE /auth/user/:user_id
     Delete User
     """
     is_same_user_or_throw(current_user, user_id)
@@ -121,7 +113,6 @@ def login_to_symetry(
 ):
     """
     Login to symetry
-    POST /auth/login/
     """
     this_user = get_user_by_email_or_username(database, username=credentials.username)
     if this_user and verify_user_credentials(this_user, credentials.password):
@@ -142,18 +133,20 @@ def login_to_symetry(
 def check(token_data: VerifyToken, database: Session = Depends(get_db)):
     """
     To check if given token is valid
-    POST /token/check/
     """
     return verify_token(database, token_data)
 
 
 @app.post("/token/validate/")
 def create_token_from_id(
-    token_id: uuid.UUID,
+    request_body: TokenRequestSchema,
     database: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    token_data = get_token_by_id(database, token_id)
+    """
+    Create the actual token from token id
+    """
+    token_data = get_token_by_id(database, request_body.token_id)
     if token_data and token_data.user_id == current_user.id:
         third_party_app = get_app_by_id(database, token_data.app_id)
         return make_token(third_party_app, current_user.id, token_data.timestamp)
@@ -167,7 +160,7 @@ def logout(
     token: str = Depends(oauth2_scheme)
 ):
     """
-    delete session and logout.
+    Delete session and logout.
     """
     if delete_session(database, token=token) is None:
         raise IntendedException("Session not found", 400)
@@ -180,7 +173,6 @@ def create_app(
     current_user: User = Depends(get_current_user)
 ):
     """
-    POST /app/
     Create a new third party app
     """
     return create_app_endpoint(database, third_party_app, current_user)
@@ -194,7 +186,6 @@ def login_to_app(
 ):
     """
     Login to app
-    POST /app/:app_id/login/
     RETURNS TOKEN_ID
     """
     return create_token(
@@ -211,7 +202,6 @@ def patch_app(
     current_user: User = Depends(get_current_user)
 ):
     """
-    PATCH /app/{app_id}/
     Update App
     """
     is_same_app_or_throw(database, app_id, current_user)
@@ -225,7 +215,6 @@ def destroy_app(
     current_user: User = Depends(get_current_user)
 ):
     """
-    DELETE /app/{app_id}/
     Delete App
     """
     is_same_app_or_throw(database, app_id, current_user.id)
