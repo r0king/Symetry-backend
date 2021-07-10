@@ -179,7 +179,7 @@ def create_app(
     return create_app_endpoint(database, third_party_app, current_user)
 
 
-@app.get("/user/apps", response_model=List[App])
+@app.get("/user/apps/", response_model=List[App])
 def list_user_apps(
     database: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)

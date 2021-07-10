@@ -30,11 +30,8 @@ def list_apps_endpoint(database, current_user):
     """
     Logic to list user's apps
     """
-    try:
-        return list_apps(database,
+    return list_apps(database,
                         identify_by={
                          'user_id':  current_user.id
                         }                        
                          )
-    except sqlalchemy.exc.IntegrityError as unique_constraint_exception:
-        raise IntendedException("", 409) from unique_constraint_exception
