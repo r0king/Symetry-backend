@@ -57,4 +57,4 @@ def list_apps(database: Session, **kwargs):
 
     Same Params as for common.list_table
     """
-    return list_table(database, App, **kwargs)
+    return list_table(database, model=App, **kwargs)
