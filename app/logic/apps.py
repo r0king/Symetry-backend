@@ -30,8 +30,7 @@ def list_apps_endpoint(database, current_user):
     """
     Logic to list user's apps
     """
-    return list_apps(database,
-                        identify_by={
-                         'user_id':  current_user.id
-                        }                        
-                         )
+    return list_apps(
+        database,
+        identify_by={'user_id':  current_user.id}
+    )

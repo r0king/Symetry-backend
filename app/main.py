@@ -70,6 +70,17 @@ def create_user(user: CreateUser, database: Session = Depends(get_db)):
     return create_user_endpoint(database, user)
 
 
+@app.get("/user/apps/", response_model=List[App])
+def list_user_apps(
+    database: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    List third party apps
+    """
+    return list_apps_endpoint(database, current_user)
+
+
 @app.get("/user/{user_id}/", response_model=User)
 def retreive_user(user_id: int, current_user: User = Depends(get_current_user)):
     """
@@ -177,17 +188,6 @@ def create_app(
     Create a new third party app
     """
     return create_app_endpoint(database, third_party_app, current_user)
-
-
-@app.get("/user/apps/", response_model=List[App])
-def list_user_apps(
-    database: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    """
-    List third party apps
-    """
-    return list_apps_endpoint(database, current_user)
 
 
 @app.post("/app/{app_id}/login/")
