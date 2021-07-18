@@ -18,9 +18,10 @@ class UpdateApp(BaseModel):
     secret: Optional[str]
 
 
-class App(CreateApp):
+class App(BaseModel):
     """Read App Schema"""
     id: uuid.UUID
+    name: str
     user_id: int
 
     class Config:

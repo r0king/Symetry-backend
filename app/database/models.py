@@ -9,7 +9,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.schema import UniqueConstraint
 from app.database.config_db import Base
-from app.enums.roles import Roles
 
 
 class User(Base):

@@ -1,6 +1,7 @@
 """
 Entrypoint
 """
+from typing import List
 import uuid
 from fastapi import FastAPI
 from fastapi.params import Depends
@@ -15,7 +16,7 @@ from app.dbops.apps import get_app_by_id, update_app, delete_app
 from app.dbops.sessions import create_session, delete_session
 from app.logic.users import create_user_endpoint, verify_user_credentials
 from app.logic.common import is_same_user_or_throw
-from app.logic.apps import is_same_app_or_throw
+from app.logic.apps import is_same_app_or_throw, list_apps_endpoint
 from app.logic.tokens import make_token, verify_token
 from app.database.models import Session
 from app.exceptions import IntendedException
@@ -67,6 +68,17 @@ def create_user(user: CreateUser, database: Session = Depends(get_db)):
     Create a new user
     """
     return create_user_endpoint(database, user)
+
+
+@app.get("/user/apps/", response_model=List[App])
+def list_user_apps(
+    database: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    List third party apps
+    """
+    return list_apps_endpoint(database, current_user)
 
 
 @app.get("/user/{user_id}/", response_model=User)
